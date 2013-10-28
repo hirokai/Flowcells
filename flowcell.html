@@ -6,11 +6,11 @@
 
 <body>
   <div class="container">
-    <div id='exps' class='row col-md-3'>
+    <div id='exps' class='row col-md-2'>
       <h3>Experiments</h3>
       {{> exps}}
 </div>    
-<div class='row col-md-9'>
+<div class='row col-md-10'>
   {{> right_pane}}
 </div>
 </div>
@@ -46,7 +46,7 @@
     
   </li>
   {{/each}}
-  <li><a href="#" id='add-exp'>Add...</a></li>  
+  <li><a href="#" id='add-exp'>Add Experiment</a></li>  
 </ul>
 </template>
 
@@ -62,8 +62,10 @@
       <td rowspan='2'>SUV mix</td>
       <td colspan='2'>SUV</td>
       <td colspan='2'>NiCl2</td>
-      <td rowspan='2'>H/F in</td>
+      <td rowspan='2'>HBS/FBS in</td>
       <td colspan='2'>Protein</td>
+      <td rowspan='2'>Heating</td>
+      <td colspan='3'>Cell</td>
     </tr>
       <tr>
       <td>in</td>
@@ -71,6 +73,9 @@
       <td>in</td>
       <td>wash</td>
       <td>in</td>
+      <td>wash</td>
+      <td>inject</td>
+      <td>fix</td>
       <td>wash</td>
     </tr>
 	  </thead>
@@ -98,6 +103,11 @@
   <td class='{{done "HF"}}'> {{cell "HF"}} </td>
   <td class='{{done "protein"}}'> {{cell "protein"}} </td>
   <td class='{{done "proteinwash"}}'> {{celltime "proteinwash"}} </td>
+  <td class='{{done "heating"}}'> {{cell "heating"}} </td>
+  <td class='{{done "cell cells"}}'> {{celltime "cells"}} </td>
+  <td class='{{done "cell fix"}}'> {{celltime "fix"}} </td>
+  <td class='{{done "cell fixwash"}}'> {{celltime "fixwash"}} </td>
+ 
 </tr>
   {{/each}}
 </tbody>

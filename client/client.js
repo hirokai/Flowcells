@@ -5,10 +5,12 @@ var formatDate = function(d) {
 var formatMin = function(v) {
   var vv = Math.abs(v);
   var s = Math.round(vv/1000);
-  return "" + Math.floor(s/60) + "m" + s % 60 +"s";
+  return "" + Math.floor(s/60) + "'" + s % 60 +'"';
 };
 
-var steps = ['dry','TBS','SUVmix','SUV','SUVwash','Ni','Niwash','HF','protein','proteinwash'];
+var steps = ['dry','TBS','SUVmix','SUV','SUVwash','Ni','Niwash','HF','protein','proteinwash',
+  'heating','cells','fix','fixwash'];
+ 
 var prevStep = function(n) {
   var i = steps.indexOf(n);
     return (i>0) ? steps[i-1] : undefined;
@@ -17,7 +19,7 @@ var prevStep = function(n) {
 Session.setDefault('editing',null);
 
 Template.exps.exps = function(){
-  return Exps.find();
+  return Exps.find({},{sort: {createOn: 1}});
 };
 
 Template.exps.active = function() {
@@ -39,7 +41,7 @@ Template.exps.events = {
       s = s_base + "-" + n;
       n += 1;
     }
-    Exps.insert({name: s});
+    Exps.insert({name: s, createOn: new Date()});
   },
   'click .expentry': function(e){
     Session.set('exp_active',this._id);
@@ -56,7 +58,9 @@ Template.exps.events = {
     Session.set('editing',null);
   },
   'click .remove': function(e) {
-    Exps.remove(this._id);
+    if(window.confirm('Are you sure you want to remove this? This cannot be undone.')){
+      Exps.remove(this._id);
+    }
   },
   'dblclick .active': function(e) {
     Session.set('editing',this._id);
@@ -95,17 +99,19 @@ Template.list.exp_name = function(){
 
 Template.list.events({
   'click button.do': function(e) {
-    var n = $(e.target).attr('data-name');
-    var obj = {};
-    obj[n] = new Date();
-    Flowcells.update(this._id,{$set: obj});
+      var n = $(e.target).attr('data-name');
+      var obj = {};
+      obj[n] = new Date();
+      Flowcells.update(this._id,{$set: obj});
   },
-  'click button.undo': function(e) {
+  'click .undo': function(e) {
     var n = $(e.target).attr('data-name');
-    var obj = {};
-    obj[n] = "";
-    console.log(obj,this._id);
-    Flowcells.update(this._id,{$unset: obj});
+    if(window.confirm('Are you sure?: '+this.name)){
+      var obj = {};
+      obj[n] = "";
+      console.log(obj,this._id);
+      Flowcells.update(this._id,{$unset: obj});
+    }
   },
   'click #newfc': function() {
     var eid = Session.get('exp_active');      
@@ -126,8 +132,10 @@ Template.list.events({
     Session.set('editing',null);
   },
   'click .remove': function(e,tmpl) {
+    if(window.confirm('Are you sure you want to remove this? This cannot be undone.')){
+      Flowcells.remove(this._id);
+    }    
     Session.set('editing',null);
-    Flowcells.remove(this._id);
   },
   'keydown .name-input':function(e,tmpl){
     if(e.keyCode == 13){
@@ -150,7 +158,7 @@ Template.list.done = function(name) {
 Template.list.cell = function(name) {
   var t = this[name];
   if(t) {
-    return new Handlebars.SafeString(formatDate(t)+"<button class='undo' data-name='"+name+"'>Undo</button>");      
+    return new Handlebars.SafeString(formatDate(t)+"<span data-name='"+name+"' class='undo glyphicon glyphicon-remove'></span>");      
   }else {
     var ps = prevStep(name);
     if(name == "dry" || this[ps]){
@@ -163,28 +171,20 @@ Template.list.cell = function(name) {
 Template.list.celltime = function(name){
   var t = this[name];
   if(t) {
-    return new Handlebars.SafeString(formatDate(t)+"<button class='undo' data-name='"+name+"'>Undo</button>");      
+    return new Handlebars.SafeString(formatDate(t)+"<span class='undo glyphicon glyphicon-remove' data-name='"+name+"'></span>");      
   }else {
-    var tp;
-    var dur;
-    var duration = Config.findOne().duration;
-    if(name=='SUVwash'){
-      tp = this['SUV'];
-      dur = duration['SUV'] * 60 * 1000;
-    }else if (name=='Niwash'){      
-      tp = this['Ni'];
-      dur = duration['Ni'] * 60 * 1000;        
-    }else if (name=='proteinwash'){
-      tp = this['protein'] * 60 * 1000;
-      dur = duration['protein'];        
-    }
+    var config = Config.findOne();
+    var duration = config.duration;
+    var warning = config.warning;
+    var tp = this[prevStep(name)];
     if(tp){
+      var dur = duration[prevStep(name)] * 60 * 1000;
       var elapsed = Session.get('time') - tp;
       var rest = dur - elapsed;
       var c='';
       if(rest < 0){
         c = 'late';
-      } else if(rest < 1000*60*3){  // within 3 min.
+      } else if(rest < 1000*60*warning.yellow){  // within 3 min.
         c = 'coming';
       }
       return new Handlebars.SafeString("<button class='do "+c+"' data-name='"+name+"'>"+formatMin(rest)+"</button>");

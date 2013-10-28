@@ -62,7 +62,10 @@ if (Meteor.isServer) {
 
 
     Config.remove({});
-    Config.insert({duration: {SUV: 40, Ni: 5, protein: 40}});
+    Config.insert({
+      duration: {SUV: 40, Ni: 5, protein: 40, heating: 20, cells: 20, fix: 10},
+      warning: {yellow: 3}
+    });
 
   });
 }

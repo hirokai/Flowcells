@@ -15,8 +15,8 @@ body{
 
 table {
   border: 1px solid black;
-  td {
-    width: 100px;
+  td,th {
+    width: 50px;
     height: 50px;
     border: 1px solid black;
     &.name {
@@ -29,18 +29,14 @@ table {
   thead  {
     text-align: center;
   }
-  button {
-    width: 80px;
-    height: 30px;
+  span.glyphicon {
+   // width: 50px;
+   // height: 30px;
+   cursor: pointer;
     &:hover {
       background: pink;
     }
-    &.late {
-      background: red;
-    }
-    &.coming {
-      background: orange;
-    }
+
     &.ebtn {
       width: 50px;
       font-size: 10px;
@@ -48,6 +44,14 @@ table {
     &.ebtn.edit {
       width: 30px;
       float: right;
+    }
+  }
+  button {
+    &.late {
+      background: red;
+    }
+    &.coming {
+      background: orange;
     }
   }
   tbody tr:nth-child(odd) {

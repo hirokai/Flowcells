@@ -1,0 +1,66 @@
+body{
+  padding: 20px;
+}
+
+#exps {
+  .nav button {
+    float: right;
+   // background: #cce;
+  //  padding: 3px;
+    &.ebtn {
+      font-size: 10px;
+    }
+  }
+}
+
+table {
+  border: 1px solid black;
+  td {
+    width: 100px;
+    height: 50px;
+    border: 1px solid black;
+    &.name {
+      width: 180px;
+    }
+    &.done {
+      background: #ccf;
+    }
+  }
+  thead  {
+    text-align: center;
+  }
+  button {
+    width: 80px;
+    height: 30px;
+    &:hover {
+      background: pink;
+    }
+    &.late {
+      background: red;
+    }
+    &.coming {
+      background: orange;
+    }
+    &.ebtn {
+      width: 50px;
+      font-size: 10px;
+    }
+    &.ebtn.edit {
+      width: 30px;
+      float: right;
+    }
+  }
+  tbody tr:nth-child(odd) {
+    background: #eee;
+  }
+}
+
+#newfc {
+  width: 100px;
+  height: 50px;
+}
+
+#progress {
+  width: 400px;
+  height: 300px;
+}

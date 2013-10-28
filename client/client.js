@@ -128,7 +128,17 @@ Template.list.events({
   'click .remove': function(e,tmpl) {
     Session.set('editing',null);
     Flowcells.remove(this._id);
-  }    
+  },
+  'keydown .name-input':function(e,tmpl){
+    if(e.keyCode == 13){
+      var n = $(tmpl.find('.name-input')).val();
+      Flowcells.update(this._id,{$set: {name: n}});
+      Session.set('editing',null);
+    }else if(e.keyCode == 27){
+     Session.set('editing',null);      
+    }
+  }
+
 });
 
 Template.list.editing = function() {

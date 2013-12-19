@@ -34,7 +34,7 @@ Template.exps.editing = function() {
 Template.exps.events = {
   'click #add-exp': function(e){
     var d = new Date();
-    var s_base = d.getMonth() + "/" + d.getDate() + "/" + +d.getFullYear();
+    var s_base = ""+(d.getMonth()+1) + "/" + d.getDate() + "/" + +d.getFullYear();
     var s = s_base;
     var n = 2;
     while(Exps.find({name: s}).count() > 0){

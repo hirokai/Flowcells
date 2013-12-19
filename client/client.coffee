@@ -11,12 +11,12 @@ Template.exps.editing = () -> Session.equals('editing',this._id)
 # Exps
 #
 
-Template.exps.events = 
+Template.exps.events =
   'click #add-exp': (e) ->
     d = new Date()
     s_base = ""+(d.getMonth()+1) + "/" + d.getDate() + "/" + +d.getFullYear()
-    s = s_base;
-    n = 2;
+    s = s_base
+    n = 2
     while Exps.find({name: s}).count() > 0
       s = s_base + "-" + n
       n += 1
@@ -102,7 +102,7 @@ Template.list.events(
       Flowcells.update(this._id,{$unset: obj})
       
   'click #newfc': () ->
-    eid = Session.get('exp_active')      
+    eid = Session.get('exp_active')
     num = Flowcells.find({exp: eid}).count() + 1
     e = Session.get('exp_active')
     Flowcells.insert({name: "FC"+num, createOn: new Date(), exp: e})

@@ -55,7 +55,7 @@ Template.right_pane.exp_selected = () -> Session.get('exp_active')?
 # Utility functions
 #
 
-formatDate = (d) -> "" + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds()
+formatDate = (d) -> moment(d).format("H:mm:ss")
 
 formatMin = (v) ->
   vv = Math.abs(v)

@@ -50,7 +50,7 @@
 
 <template name="list">
 <h1>{{exp_name}}</h1>
-  <button id='newfc'>New FC</button>
+  <button class='btn btn-default' id='newfc'>New FC</button>
   <table>
 	  <thead>
       <tr>
@@ -83,12 +83,12 @@
   <td class='name'>
     {{#if editing}}
     <input type='input' class='name-input' value='{{name}}'/>
-    <button class='ebtn ok'>OK</button>
-    <button class='ebtn cancel'>Cancel</button>
-    <button class='ebtn remove'>Remove</button>
+    <button class='btn ok'>OK</button>
+    <button class='btn cancel'>Cancel</button>
+    <button class='btn remove'>Remove</button>
     {{else}}
     <span class='name-label'>{{name}}</span>
-    <button class='ebtn edit'><span class='glyphicon glyphicon-pencil'></span></button>
+    <button class='btn edit'><span class='glyphicon glyphicon-pencil'></span></button>
     {{/if}}
   </td>
   <td class='{{done "dry"}}'> {{cell "dry"}} </td>

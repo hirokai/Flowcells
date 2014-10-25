@@ -1,11 +1,12 @@
 Session.setDefault('editing',null)
 
-Template.exps.exps = () -> Exps.find({},{sort: {createOn: 1}})
+Template.exps.helpers(
+  exps: () -> Exps.find({},{sort: {createOn: 1}})
 
-Template.exps.active = () -> if Session.equals('exp_active',this._id) then 'active' else ''
+  active: () -> if Session.equals('exp_active',this._id) then 'active' else ''
 
-Template.exps.editing = () -> Session.equals('editing',this._id)
-
+  editing: () -> Session.equals('editing',this._id)
+  )
 
 #
 # Exps
@@ -48,7 +49,8 @@ Template.exps.events =
      Session.set('editing',null)
 
 
-Template.right_pane.exp_selected = () -> Session.get('exp_active')?
+Template.right_pane.helpers
+  exp_selected: () -> Session.get('exp_active')?
 
 
 #
@@ -65,25 +67,89 @@ formatMin = (v) ->
 
 steps = ['dry','TBS','SUVmix','SUV','SUVwash','Ni','Niwash','HF','protein','proteinwash',
   'heating','cells','fix','fixwash']
-
  
 prevStep = (n) ->
   i = steps.indexOf(n)
   if i > 0 then steps[i-1] else undefined
 
-
 #
 # Flowcells
 #
 
-Template.list.flowcells = () ->
-  eid = Session.get('exp_active')
-  Flowcells.find({exp: eid},{sort: {createOn: 1}})
+Template.list.helpers
+  flowcells: () ->
+    eid = Session.get('exp_active')
+    Flowcells.find({exp: eid},{sort: {createOn: 1}})
 
-Template.list.exp_name = () ->
-  eid = Session.get('exp_active')
-  exp = if eid then Exps.findOne(eid) else null
-  exp?.name
+  exp_name: () ->
+    eid = Session.get('exp_active')
+    exp = if eid then Exps.findOne(eid) else null
+    exp?.name
+
+  editing: () -> Session.get('editing') == this._id
+
+  done: (name) -> if this[name]? then "done" else ""
+
+  cell: (name) ->
+    t = this[name]
+    if t
+      new Handlebars.SafeString(formatDate(t)+"<span data-name='"+name+"' class='undo glyphicon glyphicon-remove'></span>")
+    else
+      ps = prevStep(name)
+      if name == "dry" || this[ps]
+        new Handlebars.SafeString("<button class='do' data-name='"+name+"'>Do</button>");
+      else
+        ""
+
+  celltime: (name) ->
+    t = this[name]
+    if t
+      new Handlebars.SafeString(formatDate(t)+"<span class='undo glyphicon glyphicon-remove' data-name='"+name+"'></span>")
+    else
+      config = Config.findOne()
+      duration = config.duration
+      warning = config.warning
+      tp = this[prevStep(name)]
+      if tp
+        dur = duration[prevStep(name)] * 60 * 1000
+        elapsed = Session.get('time') - tp
+        rest = dur - elapsed
+        c = ''
+        if rest < 0
+          c = 'late'
+        else if rest < 1000*60*warning.yellow # within 3 min.
+          c = 'coming'
+        new Handlebars.SafeString("<button class='do "+c+"' data-name='"+name+"'>"+formatMin(rest)+"</button>")
+      else
+        if Flowcells.findOne(this._id)[prevStep(name)]
+            new Handlebars.SafeString("<button class='do "+c+"' data-name='"+name+"'>"+formatMin(rest)+"</button>")
+        else ""
+
+# You can choose "Fixing cell is not done" option.
+  celltime_fixing: () ->
+    t = this[name]
+    if t
+      new Handlebars.SafeString(formatDate(t)+"<span class='undo glyphicon glyphicon-remove' data-name='"+name+"'></span>")
+    else
+      config = Config.findOne()
+      duration = config.duration
+      warning = config.warning
+      tp = this[prevStep(name)]
+      if tp
+        dur = duration[prevStep(name)] * 60 * 1000
+        elapsed = Session.get('time') - tp
+        rest = dur - elapsed
+        c = ''
+        if rest < 0
+          c = 'late'
+        else if rest < 1000*60*warning.yellow # within 3 min.
+          c = 'coming'
+        new Handlebars.SafeString("<button class='do "+c+"' data-name='"+name+"'>"+formatMin(rest)+"</button>")
+      else
+        if Flowcells.findOne(this._id)[prevStep(name)]
+          new Handlebars.SafeString("<button class='do "+c+"' data-name='"+name+"'>"+formatMin(rest)+"</button>")
+        else
+          "No!"
 
 
 Template.list.events(
@@ -132,73 +198,5 @@ Template.list.events(
     else if e.keyCode == 27
       Session.set('editing',null)
 )
-
-Template.list.editing = () -> Session.get('editing') == this._id
-
-Template.list.done = (name) -> if this[name]? then "done" else ""
-
-Template.list.cell = (name) ->
-  t = this[name]
-  if t
-    new Handlebars.SafeString(formatDate(t)+"<span data-name='"+name+"' class='undo glyphicon glyphicon-remove'></span>")
-  else
-    ps = prevStep(name)
-    if name == "dry" || this[ps]
-      new Handlebars.SafeString("<button class='do' data-name='"+name+"'>Do</button>");
-    else
-      ""
-
-Template.list.celltime = (name) ->
-  t = this[name]
-  if t
-    new Handlebars.SafeString(formatDate(t)+"<span class='undo glyphicon glyphicon-remove' data-name='"+name+"'></span>")
-  else
-    config = Config.findOne()
-    duration = config.duration
-    warning = config.warning
-    tp = this[prevStep(name)]
-    if tp
-      dur = duration[prevStep(name)] * 60 * 1000
-      elapsed = Session.get('time') - tp
-      rest = dur - elapsed
-      c = ''
-      if rest < 0
-        c = 'late'
-      else if rest < 1000*60*warning.yellow # within 3 min.
-        c = 'coming'
-      new Handlebars.SafeString("<button class='do "+c+"' data-name='"+name+"'>"+formatMin(rest)+"</button>")
-    else
-      if Flowcells.findOne(this._id)[prevStep(name)]
-          new Handlebars.SafeString("<button class='do "+c+"' data-name='"+name+"'>"+formatMin(rest)+"</button>")
-      else ""
-
-
-
-# You can choose "Fixing cell is not done" option.
-Template.list.celltime_fixing =
-  () ->
-    t = this[name]
-    if t
-      new Handlebars.SafeString(formatDate(t)+"<span class='undo glyphicon glyphicon-remove' data-name='"+name+"'></span>")
-    else
-      config = Config.findOne()
-      duration = config.duration
-      warning = config.warning
-      tp = this[prevStep(name)]
-      if tp
-        dur = duration[prevStep(name)] * 60 * 1000
-        elapsed = Session.get('time') - tp
-        rest = dur - elapsed
-        c = ''
-        if rest < 0
-          c = 'late'
-        else if rest < 1000*60*warning.yellow # within 3 min.
-          c = 'coming'
-        new Handlebars.SafeString("<button class='do "+c+"' data-name='"+name+"'>"+formatMin(rest)+"</button>")
-      else
-        if Flowcells.findOne(this._id)[prevStep(name)]
-          new Handlebars.SafeString("<button class='do "+c+"' data-name='"+name+"'>"+formatMin(rest)+"</button>")
-        else
-          "No!"
 
 

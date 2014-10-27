@@ -19,14 +19,26 @@
 
 <template name='right_pane'>
 
-  {{#if exp_selected}}   
-  {{> list}}
+  {{#if exp_selected}}
+    {{> list}}
   {{else}}
   Choose exp...
   {{/if}}
  </template>
 
 <template name='exps'>
+  <!-- Split button -->
+<div class="btn-group">
+  <button type="button" class="btn btn-primary" id='add-exp'>Add exp</button>
+  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+    <span class="caret"></span>
+    <span class="sr-only">Toggle Dropdown</span>
+  </button>
+  <ul class="dropdown-menu" role="menu">
+    <li><a href="#" id='add-exp'>Default</a></li>
+    <li><a href="#" id='add-biotin'>Biotin</a></li>
+  </ul>
+</div>
 <ul class="nav nav-pills nav-stacked">
   {{#each exps}}
   <li class="{{active}}">
@@ -44,76 +56,60 @@
     
   </li>
   {{/each}}
-  <li><a href="#" id='add-exp'>Add Experiment</a></li>  
+  <li><a href="#" id='add-exp'>
+  </a></li>
+  <li>
+</li>
+
 </ul>
 </template>
 
 <template name="list">
-<h1>{{exp_name}}</h1>
-  <button class='btn btn-default' id='newfc'>New FC</button>
+<h2>{{exp_name}} {{label_type}}</h2>
+    <button class='btn btn-default' id='newfc'>New FC</button>
   <table>
-	  <thead>
+    <thead>
       <tr>
-      <td rowspan='2'></td>
-      <td rowspan='2'>Dry coverslip</td>
-      <td rowspan='2'>TBS in</td>
-      <td rowspan='2'>SUV mix</td>
-      <td colspan='2'>SUV</td>
-      <td colspan='2'>NiCl2</td>
-      <td rowspan='2'>HBS/FBS in</td>
-      <td colspan='2'>Protein</td>
-      <td rowspan='2'>Heating</td>
-      <td colspan='3'>Cell</td>
+      <td colspan='1' rowspan='2'></td>
+      {{#each header1}}
+        <td colspan='{{col}}' rowspan='{{row}}'>{{name}}</td>
+      {{/each}}
     </tr>
       <tr>
-      <td>in</td>
-      <td>wash</td>
-      <td>in</td>
-      <td>wash</td>
-      <td>in</td>
-      <td>wash</td>
-      <td>inject</td>
-      <td>fix</td>
-      <td>wash</td>
+      {{#each header2}}
+        <td>{{.}}</td>
+      {{/each}}
     </tr>
-	  </thead>
+    </thead>
 <tbody>
   {{#each flowcells}}
-<tr>
+<tr data-id='{{_id}}'>
   <td class='name'>
     {{#if editing}}
-    <input type='input' class='name-input' value='{{name}}'/>
-    <button class='btn ok'>OK</button>
-    <button class='btn cancel'>Cancel</button>
-    <button class='btn remove'>Remove</button>
+      <input type='input' class='name-input' value='{{name}}'/>
+      <button class='btn ok'>OK</button>
+      <button class='btn cancel'>Cancel</button>
+      <button class='btn remove'>Remove</button>
     {{else}}
-    <span class='name-label'>{{name}}</span>
-    <button class='btn edit'><span class='glyphicon glyphicon-pencil'></span></button>
+      <span class='name-label'>{{name}}</span>
+      <button class='btn edit'><span class='glyphicon glyphicon-pencil'></span></button>
     {{/if}}
   </td>
-  <td class='{{done "dry"}}'> {{cell "dry"}} </td>
-  <td class='{{done "TBS"}}'> {{cell "TBS"}} </td>
-  <td class='{{done "dry"}}'> {{cell "SUVmix"}} </td>  
-  <td class='{{done "SUVmix"}}'> {{cell "SUV"}} </td>
-  <td class='{{done "SUVwash"}}'> {{celltime "SUVwash"}} </td>
-  <td class='{{done "Ni"}}'> {{cell "Ni"}} </td>
-  <td class='{{done "Niwash"}}'> {{celltime "Niwash"}} </td>
-  <td class='{{done "HF"}}'> {{cell "HF"}} </td>
-  <td class='{{done "protein"}}'> {{cell "protein"}} </td>
-  <td class='{{done "proteinwash"}}'> {{celltime "proteinwash"}} </td>
-  <td class='{{done "heating"}}'> {{cell "heating"}} </td>
-  <td class='{{done "cell cells"}}'> {{celltime "cells"}} </td>
-  <td class='{{done "cell fix"}}'> {{celltime "fix"}} </td>
-  <td class='{{done "cell fixwash"}}'> {{celltime "fixwash"}} </td>
+  {{#each timepoints}}
+    <td class='{{done name}}'>
+      {{#with context=this parent=..}}
+        {{#if context.time}}
+          {{celltime context.name parent}}
+        {{else}}
+          {{cell context.name parent}}
+        {{/if}}
+      {{/with}}
+    </td>
+  {{/each}}
  
 </tr>
   {{/each}}
 </tbody>
       </table>
-      <div id='chat_history'></div>
-      <input id='chat_enter'/>
-<!--       <svg id='progress'>
-      {{#constant}}
-      {{/constant}}
-      </svg> -->
 </template>
+

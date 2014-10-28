@@ -68,26 +68,12 @@ formatMin = (v) ->
   s = Math.round(vv/1000)
   "" + Math.floor(s/60) + "'" + s % 60 + '"'
 
-
-steps = 
-  default: [
-    'dry','TBS','SUVmix','SUV','SUVwash','Ni','Niwash','HF',
-    'protein','proteinwash',
-    'heating','cells','fix','fixwash']
-  biotin: [
-    'dry','TBS','SUVmix','SUV','SUVwash','Ni','Niwash','HF',
-    'streptavidin', 'streptavidin_wash',
-    'protein','proteinwash',
-    'heating','cells','fix','fixwash']
-
-
-duration =
-  default: {SUV: 40, Ni: 5, protein: 40, heating: 20, cells: 20, fix: 10}
-  biotin: {SUV: 40, Ni: 5, HF: 15, streptavidin: 45, protein: 40, heating: 20, cells: 20, fix: 10}
-
 prevStep = (n,typ) ->
-  i = steps[typ || 'default'].indexOf(n)
-  if i > 0 then steps[typ || 'default'][i-1] else undefined
+  steps = Protocols.findOne({name: (typ || 'default')}).timepoints
+  for v,i in steps
+    if v.name == n
+      break
+  if i < steps.length and i > 0 then steps[i-1].name else undefined
 
 #
 # Flowcells
@@ -97,73 +83,16 @@ Template.list.helpers
   header1: () ->
     eid = Session.get('exp_active')
     exp = if eid then Exps.findOne(eid) else null
-    if  exp?.expType == 'biotin' then [
-      (col: 1, row: 2, name: 'Dry coverslip')
-      (col: 1, row: 2, name: 'TBS in')
-      (col: 1, row: 2, name: 'SUV mix')
-      (col: 2, row: 1, name: 'SUV')
-      (col: 2, row: 1, name: 'NiCl2')
-      (col: 1, row: 2, name: 'H/F in')
-      (col: 2, row: 1, name: 'Streptavidin')
-      (col: 2, row: 1, name: 'Protein')
-      (col: 1, row: 2, name: 'Heating')
-      (col: 3, row: 1, name: 'Cells')
-    ] else [
-      (col: 1, row: 2, name: 'Dry coverslip')
-      (col: 1, row: 2, name: 'TBS in')
-      (col: 1, row: 2, name: 'SUV mix')
-      (col: 2, row: 1, name: 'SUV')
-      (col: 2, row: 1, name: 'NiCl2')
-      (col: 1, row: 2, name: 'H/F in')
-      (col: 2, row: 1, name: 'Protein')
-      (col: 1, row: 2, name: 'Heating')
-      (col: 3, row: 1, name: 'Cells')
-    ]
+    Protocols.findOne({name: (exp?.expType || 'default')}).header1
   header2: () ->
     eid = Session.get('exp_active')
     exp = if eid then Exps.findOne(eid) else null
-    if exp?.expType == 'biotin' then [
-      'in','wash','in','wash','in','wash','in','wash','in','fix','wash'
-    ] else [
-      'in','wash','in','wash','in','wash','in','fix','wash'
-    ]
+    Protocols.findOne({name: (exp?.expType || 'default')}).header2
 
   timepoints: () ->
     eid = Session.get('exp_active')
     exp = if eid then Exps.findOne(eid) else null
-    if exp?.expType == 'biotin' then [
-      (name: 'dry')
-      (name: 'TBS')
-      (name: 'SUVmix')
-      (name: 'SUV')
-      (name: 'SUVwash', time: true)
-      (name: 'Ni')
-      (name: 'Niwash', time: true)
-      (name: 'HF')
-      (name: 'streptavidin', time: true)
-      (name: 'streptavidin_wash', time: true)
-      (name: 'protein')
-      (name: 'proteinwash', time: true)
-      (name: 'heating')
-      (name: 'cells', time: true)
-      (name: 'fix', time: true)
-      (name: 'fixwash', time: true)
-    ] else [
-      (name: 'dry')
-      (name: 'TBS')
-      (name: 'SUVmix')
-      (name: 'SUV')
-      (name: 'SUVwash', time: true)
-      (name: 'Ni')
-      (name: 'Niwash', time: true)
-      (name: 'HF')
-      (name: 'protein')
-      (name: 'proteinwash', time: true)
-      (name: 'heating')
-      (name: 'cells', time: true)
-      (name: 'fix', time: true)
-      (name: 'fixwash', time: true)
-    ]
+    Protocols.findOne({name: (exp?.expType || 'default')}).timepoints
 
   flowcells: () ->
     eid = Session.get('exp_active')
@@ -213,7 +142,8 @@ Template.list.helpers
       warning = {yellow: 3}
       tp = fc[prevStep(name,typ)]
       if tp
-        dur = duration[typ][prevStep(name,typ)] * 60 * 1000
+        timepoints = Protocols.findOne({name: (typ || 'default')}).timepoints
+        dur = _.findWhere(timepoints,{name: prevStep(name,typ)}).duration * 60 * 1000
         elapsed = Session.get('time') - tp
         rest = dur - elapsed
         c = ''

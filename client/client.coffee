@@ -84,7 +84,7 @@ Template.list.helpers
     eid = Session.get('exp_active')
     exp = if eid then Exps.findOne(eid) else null
     Protocols.findOne({name: (exp?.expType || 'default')}).header1
-    
+
   header2: () ->
     eid = Session.get('exp_active')
     exp = if eid then Exps.findOne(eid) else null
@@ -232,3 +232,6 @@ Template.list.events(
     else if e.keyCode == 27
       Session.set('editing',null)
 )
+
+Template.list.rendered = ->
+  console.log('rendered')

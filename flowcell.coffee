@@ -56,76 +56,79 @@ if Meteor.isServer
     @Config.insert
       duration: {SUV: 40, Ni: 5, protein: 40, heating: 20, cells: 20, fix: 10}
       warning: {yellow: 3}
-    if @Protocols.find({}).count() == 0
-      initProtocols()
+#    if @Protocols.find({}).count() == 0
+    initProtocols()
 
 initProtocols = ->
-      name: 'biotin',
-      header1: [
-        (col: 1, row: 2, name: 'Dry coverslip')
-        (col: 1, row: 2, name: 'TBS in')
-        (col: 1, row: 2, name: 'SUV mix')
-        (col: 2, row: 1, name: 'SUV')
-        (col: 2, row: 1, name: 'NiCl2')
-        (col: 1, row: 2, name: 'H/F in')
-        (col: 2, row: 1, name: 'Streptavidin')
-        (col: 2, row: 1, name: 'Protein')
-        (col: 1, row: 2, name: 'Heating')
-        (col: 3, row: 1, name: 'Cells')
-      ]
-      header2:[
-        'in','wash','in','wash','in','wash','in','wash','in','fix','wash'
-      ]
-      timepoints: [ 
-        (name: 'dry')
-        (name: 'TBS')
-        (name: 'SUVmix')
-        (name: 'SUV', duration: 40)
-        (name: 'SUVwash', time: true)
-        (name: 'Ni', duration: 5)
-        (name: 'Niwash', time: true)
-        (name: 'HF', duration: 15)
-        (name: 'streptavidin', time: true, duration: 45)
-        (name: 'streptavidin_wash', time: true)
-        (name: 'protein', duration: 40)
-        (name: 'proteinwash', time: true)
-        (name: 'heating', duration: 20)
-        (name: 'cells', time: true, duration: 20)
-        (name: 'fix', time: true, duration: 10)
-        (name: 'fixwash', time: true)
-      ]
-    @Protocols.insert
-      name: 'default',
-      header1: [
-        (col: 1, row: 2, name: 'Dry coverslip')
-        (col: 1, row: 2, name: 'TBS in')
-        (col: 1, row: 2, name: 'SUV mix')
-        (col: 2, row: 1, name: 'SUV')
-        (col: 2, row: 1, name: 'NiCl2')
-        (col: 1, row: 2, name: 'H/F in')
-        (col: 2, row: 1, name: 'Protein')
-        (col: 1, row: 2, name: 'Heating')
-        (col: 3, row: 1, name: 'Cells')
-      ]
-      header2: [
-        'in','wash','in','wash','in','wash','in','fix','wash'
-      ]
-      timepoints: [
-        (name: 'dry')
-        (name: 'TBS')
-        (name: 'SUVmix')
-        (name: 'SUV', duration: 40)
-        (name: 'SUVwash', time: true)
-        (name: 'Ni', duration: 5)
-        (name: 'Niwash', time: true)
-        (name: 'HF')
-        (name: 'protein', duration: 40)
-        (name: 'proteinwash', time: true)
-        (name: 'heating', duration: 20)
-        (name: 'cells', time: true, duration: 20)
-        (name: 'fix', time: true, duration: 10)
-        (name: 'fixwash', time: true)
-      ]
+  @Protocols.remove({})
+  @Protocols.insert
+    name: 'biotin',
+    header1: [
+      (col: 1, row: 2, name: 'Dry coverslip')
+      (col: 1, row: 2, name: 'TBS in')
+      (col: 1, row: 2, name: 'SUV mix')
+      (col: 2, row: 1, name: 'SUV')
+      (col: 2, row: 1, name: 'NiCl2')
+      (col: 1, row: 2, name: 'H/F in')
+      (col: 2, row: 1, name: 'Streptavidin')
+      (col: 2, row: 1, name: 'Protein')
+      (col: 1, row: 2, name: 'Heating')
+      (col: 3, row: 1, name: 'Cells')
+    ]
+    header2:[
+      'in','wash','in','wash','in','wash','in','wash','in','fix','wash'
+    ]
+    timepoints: [ 
+      (name: 'dry')
+      (name: 'TBS')
+      (name: 'SUVmix')
+      (name: 'SUV', duration: 40)
+      (name: 'SUVwash', time: true)
+      (name: 'Ni', duration: 5)
+      (name: 'Niwash', time: true)
+      (name: 'HF', duration: 15)
+      (name: 'streptavidin', time: true, duration: 45)
+      (name: 'streptavidin_wash', time: true)
+      (name: 'protein', duration: 40)
+      (name: 'proteinwash', time: true)
+      (name: 'heating', duration: 20)
+      (name: 'cells', time: true, duration: 20)
+      (name: 'fix', time: true, duration: 10)
+      (name: 'fixwash', time: true)
+    ]
+
+  @Protocols.insert
+    name: 'default',
+    header1: [
+      (col: 1, row: 2, name: 'Dry coverslip')
+      (col: 1, row: 2, name: 'TBS in')
+      (col: 1, row: 2, name: 'SUV mix')
+      (col: 2, row: 1, name: 'SUV')
+      (col: 2, row: 1, name: 'NiCl2')
+      (col: 1, row: 2, name: 'H/F in')
+      (col: 2, row: 1, name: 'Protein')
+      (col: 1, row: 2, name: 'Heating')
+      (col: 3, row: 1, name: 'Cells')
+    ]
+    header2: [
+      'in','wash','in','wash','in','wash','in','fix','wash'
+    ]
+    timepoints: [
+      (name: 'dry')
+      (name: 'TBS')
+      (name: 'SUVmix')
+      (name: 'SUV', duration: 40)
+      (name: 'SUVwash', time: true)
+      (name: 'Ni', duration: 5)
+      (name: 'Niwash', time: true)
+      (name: 'HF')
+      (name: 'protein', duration: 40)
+      (name: 'proteinwash', time: true)
+      (name: 'heating', duration: 20)
+      (name: 'cells', time: true, duration: 20)
+      (name: 'fix', time: true, duration: 10)
+      (name: 'fixwash', time: true)
+    ]
 
 resetData = ->
  sample_data = [

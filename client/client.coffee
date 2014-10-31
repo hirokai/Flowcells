@@ -12,8 +12,10 @@ Template.exps.helpers
 Meteor.loginWithGoogle()
 
 checkTimeLapse = ->
-  Session.set('time',new Date())
-#  renderProgress()
+  d = new Date()
+  Session.set('time',d)
+  if Math.floor(d.valueOf()/1000) % 10 == 0
+    renderProgress()
 
 Session.setDefault('editing',null)
 
@@ -271,10 +273,15 @@ renderProgress = ->
       ).enter()
     .append('rect')
     .attr('x',(d,ti,fc_i)->
-      x(if fcs[fc_i] then fcs[fc_i][d] else null) || -300
+      (x(if fcs[fc_i] then fcs[fc_i][d] else null)-3) || -300
       )
-    .attr({width:5, height: 10})
+    .attr({width:6, height: 10})
     .attr('fill',(d,i)->color(i))
+  svg.append('g')
+    .attr('transform',(d,i) -> 'translate ('+x(new Date())+',40)')
+    .append('polygon')
+    .attr('points',"0,0 -5,-10 5,-10")
+    .attr('fill',(d,i)->'red')
   xAxis = d3.svg.axis().scale(x).orient('top').ticks(d3.time.seconds,10).tickFormat(d3.time.format('%H:%M')).tickSize(3)
   svg.append('g').attr('class','x axis')
     .attr('transform','translate(0,50)')

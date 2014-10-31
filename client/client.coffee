@@ -272,6 +272,7 @@ Template.list.events(
 )
 
 calcPlannedTime = (fc,n,steps) ->
+  defaultInterval = 5
 #  console.log(fc,n,steps)
   for v,i in steps
     if not fc[v.name]
@@ -281,11 +282,9 @@ calcPlannedTime = (fc,n,steps) ->
     for j in [i-1..steps.length-1]
       if n == steps[j].name
         break
-      t += steps[j].duration || 5 # 5 min as standard operation time.
-    r = d3.time.minute.offset(fc[steps[i-1].name],t)
-    console.log(r)
-    r
-  else 5
+      t += steps[j].duration || defaultInterval # 5 min as standard operation time.
+    d3.time.minute.offset(fc[steps[i-1].name],t)
+  else defaultInterval
 
 renderProgress = ->
   eid = Session.get('exp_active')
@@ -327,14 +326,20 @@ renderProgress = ->
       x(et)-x(fcs[fc_i][d] || calcPlannedTime(fcs[fc_i],d,timepoints))
     )
     .style({stroke: (d,i)->color(i)})
-    .style('opacity', (d,ti,fc_i) -> if fcs[fc_i][d] then 1 else 0.4)
+    .style('opacity', (d,ti,fc_i) -> if fcs[fc_i][nextStep(d,typ)] then 1 else 0.4)
     .style('stroke-width',2)
   svg.append('g')
     .attr('transform',(d,i) -> 'translate ('+x(new Date())+',40)')
     .append('polygon')
     .attr('points',"0,0 -5,-10 5,-10")
     .attr('fill',(d,i)->'red')
-  xAxis = d3.svg.axis().scale(x).orient('top').ticks(d3.time.seconds,10).tickFormat(d3.time.format('%H:%M')).tickSize(3)
+  xAxis = d3.svg.axis().scale(x)
+    .ticks(10).tickFormat((d)->
+      moment(d).format('H:mm')
+      )
+#    .orient('top')
+    
+
   svg.append('g').attr('class','x axis')
     .attr('transform','translate(0,50)')
     .call(xAxis)

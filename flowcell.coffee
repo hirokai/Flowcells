@@ -166,7 +166,7 @@ initProtocols = ->
       (name: 'fix', time: true, duration: 10)
       (name: 'fixwash', time: true)
     ]
-    totalTime: 150
+    totalTime: 180
 
 resetData = ->
  sample_data = [

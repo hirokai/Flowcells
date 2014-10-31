@@ -39,6 +39,7 @@ Template.exps.events =
   'click .add-exp': (e) ->
     eid = Exps.insert({name: findName(), createOn: new Date(), expType: $(e.target).attr('data-exptype')})
     Session.set('exp_active',eid)
+    renderProgress()
     
   'click .expentry': (e) ->
     Session.set('exp_active',this._id)
@@ -91,6 +92,13 @@ prevStep = (n,typ) ->
       break
   if i < steps.length and i > 0 then steps[i-1].name else undefined
 
+nextStep = (n,typ) ->
+  steps = Protocols.findOne({name: (typ || 'default')}).timepoints
+  for v,i in steps
+    if v.name == n
+      break
+  if i < steps.length-1 then steps[i+1].name else undefined
+
 #
 # Flowcells
 #
@@ -142,7 +150,7 @@ Template.list.helpers
     t = fc[name]
     if t
       if Session.equals('showTime',true)
-        new Handlebars.SafeString(formatDate(t)+"<span data-name='"+name+"' class='undo glyphicon glyphicon-remove'></span>")
+        new Handlebars.SafeString(formatDate(t))
       else
         ""
     else
@@ -161,7 +169,7 @@ Template.list.helpers
     t = fc[name]
     if t
       if Session.equals('showTime',true)
-        new Handlebars.SafeString(formatDate(t)+"<span data-name='"+name+"' class='undo glyphicon glyphicon-remove'></span>")
+        new Handlebars.SafeString(formatDate(t))
       else
         ""
     else
@@ -222,10 +230,11 @@ Template.list.events(
   'click .undo': (e) ->
     n = $(e.target).attr('data-name')
     fid = $(e.target).parents('tr').attr('data-id')
-    if window.confirm('Are you sure?: '+n)
+    if window.confirm('Are you sure to undo this?: '+n)
       obj = {}
       obj[n] = ""
       Flowcells.update(fid,{$unset: obj})
+      renderProgress()
       
   'click #newfc': () ->
     eid = Session.get('exp_active')
@@ -265,6 +274,7 @@ Template.list.events(
 renderProgress = ->
   eid = Session.get('exp_active')
   exp = Exps.findOne(eid)
+  typ = exp?.expType || 'default'
   fcs = Flowcells.find({exp: eid},{sort: {createOn: 1}}).fetch()
   svg = d3.select('svg')
   svg.selectAll('*').remove()
@@ -278,16 +288,28 @@ renderProgress = ->
   console.log(from,to)
   x = d3.scale.linear().domain([from,to]).range([0,750])
   tn = _.map(timepoints,(t)->t.name)
-  svg.selectAll('g').data(fcs,(d)->d._id).enter().append('g')
-    .attr('transform',(d,i) -> 'translate (0,'+(i*25+100)+')')
-    .selectAll('circle')
-    .data(tn).enter()
-    .append('circle')
-    .attr('cx',(d,ti,fc_i)->
-      x(if fcs[fc_i] then fcs[fc_i][d] else null) || -300
+  gs = svg.selectAll('g').data(fcs,(d)->d._id).enter().append('g')
+    .attr('transform',(d,i) ->   
+      'translate (0,'+(i*25+100)+')'
       )
-    .attr({r:6, opacity: 0.6})
+    .selectAll('g')
+    .data(tn).enter()
+    .append('g')
+    .attr('transform',(d,ti,fc_i) ->
+      xx = x(if fcs[fc_i] then fcs[fc_i][d] else null) || -300
+      'translate('+xx+',0)'
+    )
+
+  gs.append('circle').attr({cx: 0, r:6, opacity: 0.6})
     .attr('fill',(d,i)->color(i))
+  gs.append('line')
+    .attr({x1: 0, y1: 0, y2: 0})
+    .attr('x2', (d,ti,fc_i) ->
+      et = fcs[fc_i][nextStep(d,typ)] || d3.time.minute.offset(fcs[fc_i][d], timepoints[ti].duration)
+      x(et)-x(fcs[fc_i][d])
+    )
+    .style({stroke: (d,i)->color(i)})
+    .style('stroke-width',1)
   svg.append('g')
     .attr('transform',(d,i) -> 'translate ('+x(new Date())+',40)')
     .append('polygon')

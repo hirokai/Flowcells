@@ -1,4 +1,5 @@
-Session.setDefault('editing', null)
+Session.setDefault('editing',null)
+Session.setDefault('showTime', false)
 
 Template.exps.helpers
   exps: () -> Exps.find({},{sort: {createOn: -1}})
@@ -74,7 +75,9 @@ Template.right_pane.helpers
 # Utility functions
 #
 
-formatDate = (d) -> moment(d).format("H:mm:ss")
+formatDate = (d) ->
+  m = moment(d)
+  m.format("H:mm") + "<small>:#{m.format('ss')}</small>"
 
 formatMin = (v) ->
   vv = Math.abs(v)
@@ -130,7 +133,7 @@ Template.list.helpers
 
   editing: () -> Session.get('editing') == this._id
 
-  done: (name) -> if this[name]? then "done" else ""
+  done: (name,fc) -> if fc[name]? then "done undo" else ""
 
   cell: (name,fc) ->
     eid = Session.get('exp_active')
@@ -138,7 +141,10 @@ Template.list.helpers
     typ = exp?.expType || 'default'
     t = fc[name]
     if t
-      new Handlebars.SafeString(formatDate(t)+"<span data-name='"+name+"' class='undo glyphicon glyphicon-remove'></span>")
+      if Session.equals('showTime',true)
+        new Handlebars.SafeString(formatDate(t)+"<span data-name='"+name+"' class='undo glyphicon glyphicon-remove'></span>")
+      else
+        ""
     else
       ps = prevStep(name,typ)
       timepoints = Protocols.findOne({name: typ}).timepoints
@@ -154,7 +160,10 @@ Template.list.helpers
     typ = exp?.expType || 'default'
     t = fc[name]
     if t
-      new Handlebars.SafeString(formatDate(t)+"<span class='undo glyphicon glyphicon-remove' data-name='"+name+"'></span>")
+      if Session.equals('showTime',true)
+        new Handlebars.SafeString(formatDate(t)+"<span data-name='"+name+"' class='undo glyphicon glyphicon-remove'></span>")
+      else
+        ""
     else
       config = Config.findOne()
       warning = {yellow: 3}
@@ -224,6 +233,9 @@ Template.list.events(
     e = Session.get('exp_active')
     Flowcells.insert({name: "FC"+num, createOn: new Date(), exp: e})
     renderProgress()
+
+  'click #toggle-time': () ->
+    Session.set('showTime',!Session.get('showTime'))
     
   'click .edit': (e,tmpl) ->
     Session.set('editing',this._id)
@@ -265,17 +277,16 @@ renderProgress = ->
   to = _.max([d3.time.minute.offset(from, totalTime), _.chain(fcs).map((fc)->_.max(_.values(fc))).max().value()])
   console.log(from,to)
   x = d3.scale.linear().domain([from,to]).range([0,750])
+  tn = _.map(timepoints,(t)->t.name)
   svg.selectAll('g').data(fcs,(d)->d._id).enter().append('g')
-    .attr('transform',(d,i) -> 'translate (0,'+(i*30+100)+')')
-    .selectAll('rect')
-    .data((d)->
-      _.map(timepoints,(t)->t.name)
-      ).enter()
-    .append('rect')
-    .attr('x',(d,ti,fc_i)->
-      (x(if fcs[fc_i] then fcs[fc_i][d] else null)-3) || -300
+    .attr('transform',(d,i) -> 'translate (0,'+(i*25+100)+')')
+    .selectAll('circle')
+    .data(tn).enter()
+    .append('circle')
+    .attr('cx',(d,ti,fc_i)->
+      x(if fcs[fc_i] then fcs[fc_i][d] else null) || -300
       )
-    .attr({width:6, height: 10})
+    .attr({r:6, opacity: 0.6})
     .attr('fill',(d,i)->color(i))
   svg.append('g')
     .attr('transform',(d,i) -> 'translate ('+x(new Date())+',40)')

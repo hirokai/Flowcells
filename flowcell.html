@@ -68,6 +68,7 @@
 <template name="list">
 <h2>{{exp_name}} {{label_type}}</h2>
     <button class='btn btn-default' id='newfc'>New FC</button>
+    <button class='btn btn-default' id='toggle-time'>Toggle Time</button>
   <table>
     <thead>
       <tr>
@@ -97,15 +98,15 @@
     {{/if}}
   </td>
   {{#each timepoints}}
-    <td class='{{done name}}'>
-      {{#with context=this parent=..}}
+    {{#with context=this parent=..}}
+    <td class='{{done context.name parent}}' data-name='{{context.name}}'>
         {{#if context.time}}
           {{celltime context.name parent}}
         {{else}}
           {{cell context.name parent}}
         {{/if}}
-      {{/with}}
     </td>
+    {{/with}}
   {{/each}}
  
 </tr>

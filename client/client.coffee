@@ -1,12 +1,13 @@
 Session.setDefault('editing', null)
 
-Template.exps.helpers(
+Template.exps.helpers
   exps: () -> Exps.find({},{sort: {createOn: -1}})
 
   active: () -> if Session.equals('exp_active',this._id) then 'active' else ''
 
   editing: () -> Session.equals('editing',this._id)
-  )
+
+  protocols: () -> Protocols.find({})
 
 Meteor.loginWithGoogle()
 
@@ -32,17 +33,13 @@ findName = () ->
   s
 
 Template.exps.events =
-  'click #add-exp': (e) ->
-    eid = Exps.insert({name: findName(), createOn: new Date(), expType: 'default'})
+  'click .add-exp': (e) ->
+    eid = Exps.insert({name: findName(), createOn: new Date(), expType: $(e.target).attr('data-exptype')})
     Session.set('exp_active',eid)
     
-  'click #add-biotin': (e) ->
-    eid = Exps.insert({name: findName(), createOn: new Date(), expType: 'biotin'})
-    Session.set('exp_active',eid)
-
   'click .expentry': (e) ->
     Session.set('exp_active',this._id)
-    renderProgress
+    renderProgress()
     
   'click .edit': (e,tmpl) -> Session.set('editing',this._id)
 
@@ -122,10 +119,12 @@ Template.list.helpers
     eid = Session.get('exp_active')
     exp = if eid then Exps.findOne(eid) else null
     t = exp?.expType || 'default'
+    prot = Protocols.findOne({name: t})
     s = switch t
       when 'biotin' then 'warning'
+      when 'pllpeg' then 'primary'
       else 'default'
-    new Handlebars.SafeString('<span class="label label-'+s+'">'+t+'</span>')
+    new Handlebars.SafeString('<span class="label label-'+s+'">'+(prot.fullname)+'</span>')
 
   editing: () -> Session.get('editing') == this._id
 
@@ -140,7 +139,9 @@ Template.list.helpers
       new Handlebars.SafeString(formatDate(t)+"<span data-name='"+name+"' class='undo glyphicon glyphicon-remove'></span>")
     else
       ps = prevStep(name,typ)
-      if name == "dry" || fc[ps]
+      timepoints = Protocols.findOne({name: typ}).timepoints
+#      console.log(timepoints[0])
+      if name == timepoints[0].name || fc[ps]
         new Handlebars.SafeString("<button class='do' data-name='"+name+"'>Do</button>");
       else
         ""

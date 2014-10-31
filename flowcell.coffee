@@ -55,6 +55,7 @@ initProtocols = ->
   @Protocols.remove({})
   @Protocols.insert
     name: 'biotin',
+    fullname: 'Biotin'
     header1: [
       (col: 1, row: 2, name: 'Dry coverslip')
       (col: 1, row: 2, name: 'TBS in')
@@ -91,7 +92,50 @@ initProtocols = ->
     totalTime: 210
 
   @Protocols.insert
+    name: 'pllpeg',
+    fullname: 'PLL-PEG'
+    header1: [
+      (col: 2, row: 1, name: 'Etch coverslip')
+      (col: 1, row: 2, name: 'Dry coverslip')
+      (col: 3, row: 1, name: 'PLL-PEG')
+      (col: 1, row: 2, name: 'TBS in')
+      (col: 1, row: 2, name: 'SUV mix')
+      (col: 2, row: 1, name: 'SUV')
+      (col: 2, row: 1, name: 'NiCl2')
+      (col: 1, row: 2, name: 'H/F in')
+      (col: 2, row: 1, name: 'Protein')
+      (col: 1, row: 2, name: 'Heating')
+      (col: 3, row: 1, name: 'Cells')
+    ]
+    header2: [
+      'start','wash','start','wash','dry','in','wash','in','wash','in','wash','in','fix','wash'
+    ]
+    timepoints: [
+      (name: 'piranha', duration: 5)
+      (name: 'piranha_wash', time: true)
+      (name: 'dry_piranha')
+      (name: 'pll',duration: 60)
+      (name: 'pll_wash', time: true)
+      (name: 'dry_pll')
+      (name: 'TBS')
+      (name: 'SUVmix')
+      (name: 'SUV', duration: 40)
+      (name: 'SUVwash', time: true)
+      (name: 'Ni', duration: 5)
+      (name: 'Niwash', time: true)
+      (name: 'HF')
+      (name: 'protein', duration: 40)
+      (name: 'proteinwash', time: true)
+      (name: 'heating', duration: 20)
+      (name: 'cells', time: true, duration: 20)
+      (name: 'fix', time: true, duration: 10)
+      (name: 'fixwash', time: true)
+    ]
+    totalTime: 150
+
+  @Protocols.insert
     name: 'default',
+    fullname: 'Default'
     header1: [
       (col: 1, row: 2, name: 'Dry coverslip')
       (col: 1, row: 2, name: 'TBS in')

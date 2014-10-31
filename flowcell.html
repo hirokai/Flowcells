@@ -35,8 +35,9 @@
     <span class="sr-only">Toggle Dropdown</span>
   </button>
   <ul class="dropdown-menu" role="menu">
-    <li><a href="#" id='add-exp'>Default</a></li>
-    <li><a href="#" id='add-biotin'>Biotin</a></li>
+    {{#each protocols}}
+      <li><a href="#" class='add-exp' data-exptype='{{name}}'>{{fullname}}</a></li>
+    {{/each}}
   </ul>
 </div>
 <ul class="nav nav-pills nav-stacked">

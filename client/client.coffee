@@ -1,12 +1,22 @@
 Session.setDefault('editing', null)
 
 Template.exps.helpers(
-  exps: () -> Exps.find({},{sort: {createOn: 1}})
+  exps: () -> Exps.find({},{sort: {createOn: -1}})
 
   active: () -> if Session.equals('exp_active',this._id) then 'active' else ''
 
   editing: () -> Session.equals('editing',this._id)
   )
+
+Meteor.loginWithGoogle()
+
+checkTimeLapse = ->
+  Session.set('time',new Date())
+#  renderProgress()
+
+Session.setDefault('editing',null)
+
+window.setInterval(checkTimeLapse,1000)
 
 #
 # Exps
@@ -23,12 +33,16 @@ findName = () ->
 
 Template.exps.events =
   'click #add-exp': (e) ->
-    Exps.insert({name: findName(), createOn: new Date(), expType: 'default'})
+    eid = Exps.insert({name: findName(), createOn: new Date(), expType: 'default'})
+    Session.set('exp_active',eid)
     
   'click #add-biotin': (e) ->
-    Exps.insert({name: findName(), createOn: new Date(), expType: 'biotin'})
+    eid = Exps.insert({name: findName(), createOn: new Date(), expType: 'biotin'})
+    Session.set('exp_active',eid)
 
-  'click .expentry': (e) -> Session.set('exp_active',this._id)
+  'click .expentry': (e) ->
+    Session.set('exp_active',this._id)
+    renderProgress
     
   'click .edit': (e,tmpl) -> Session.set('editing',this._id)
 
@@ -190,9 +204,8 @@ Template.list.events(
     fid = $(e.target).parents('tr').attr('data-id')
     obj = {}
     obj[n] = new Date()
-    fc = Flowcells.findOne(fid)
     Flowcells.update(fid,{$set: obj})
-    fc = Flowcells.findOne(fid)
+    renderProgress()
  
   'click .undo': (e) ->
     n = $(e.target).attr('data-name')
@@ -207,6 +220,7 @@ Template.list.events(
     num = Flowcells.find({exp: eid}).count() + 1
     e = Session.get('exp_active')
     Flowcells.insert({name: "FC"+num, createOn: new Date(), exp: e})
+    renderProgress()
     
   'click .edit': (e,tmpl) ->
     Session.set('editing',this._id)
@@ -233,5 +247,37 @@ Template.list.events(
       Session.set('editing',null)
 )
 
+renderProgress = ->
+  eid = Session.get('exp_active')
+  exp = Exps.findOne(eid)
+  fcs = Flowcells.find({exp: eid},{sort: {createOn: 1}}).fetch()
+  svg = d3.select('svg')
+  svg.selectAll('*').remove()
+  console.log(fcs.length)
+  color = d3.scale.category20()
+  protocol = Protocols.findOne({name: exp.expType || 'default'})
+  timepoints = protocol.timepoints
+  totalTime = protocol.totalTime
+  from = _.chain(fcs).map((fc)->_.min(_.values(fc))).min().value()
+  to = _.max([d3.time.minute.offset(from, totalTime), _.chain(fcs).map((fc)->_.max(_.values(fc))).max().value()])
+  console.log(from,to)
+  x = d3.scale.linear().domain([from,to]).range([0,750])
+  svg.selectAll('g').data(fcs,(d)->d._id).enter().append('g')
+    .attr('transform',(d,i) -> 'translate (0,'+(i*30+100)+')')
+    .selectAll('rect')
+    .data((d)->
+      _.map(timepoints,(t)->t.name)
+      ).enter()
+    .append('rect')
+    .attr('x',(d,ti,fc_i)->
+      x(if fcs[fc_i] then fcs[fc_i][d] else null) || -300
+      )
+    .attr({width:5, height: 10})
+    .attr('fill',(d,i)->color(i))
+  xAxis = d3.svg.axis().scale(x).orient('top').ticks(d3.time.seconds,10).tickFormat(d3.time.format('%H:%M')).tickSize(3)
+  svg.append('g').attr('class','x axis')
+    .attr('transform','translate(0,50)')
+    .call(xAxis)
+
 Template.list.rendered = ->
-  console.log('rendered')
+  renderProgress()

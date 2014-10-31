@@ -76,6 +76,31 @@ table {
 }
 
 #progress {
-  width: 400px;
+  width: 800px;
   height: 300px;
+}
+
+  .axis path, .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+
+
+@-webkit-keyframes pulse {
+ from {
+   opacity: 1.0;/*透明度100%*/
+ }
+ to {
+   opacity: 0.8;/*透明度80%*/
+ }
+}
+
+.blinking{
+-webkit-animation-name: pulse;/* 実行する名前 */
+-webkit-animation-duration: 2s;/* 0.3秒かけて実行 */
+-webkit-animation-iteration-count:infinite;/* 何回実行するか。infiniteで無限 */
+-webkit-animation-timing-function:ease-in-out;/* イーズインアウト */
+-webkit-animation-direction: alternate;/* alternateにするとアニメーションが反復 */
+-webkit-animation-delay: 0s; /* 実行までの待ち時間 */
 }

@@ -35,14 +35,6 @@ activateInput = (input) ->
   input.focus()
   input.select()
 
-if Meteor.isClient
-  Meteor.loginWithGoogle()
-
-  checkTimeLapse = -> Session.set('time',new Date())
-  
-  Session.setDefault('editing',null)
-  
-  window.setInterval(checkTimeLapse,1000)
 
 truef = -> true
 
@@ -96,6 +88,7 @@ initProtocols = ->
       (name: 'fix', time: true, duration: 10)
       (name: 'fixwash', time: true)
     ]
+    totalTime: 210
 
   @Protocols.insert
     name: 'default',
@@ -129,6 +122,7 @@ initProtocols = ->
       (name: 'fix', time: true, duration: 10)
       (name: 'fixwash', time: true)
     ]
+    totalTime: 150
 
 resetData = ->
  sample_data = [

@@ -136,6 +136,8 @@ Template.list.helpers
     s = switch t
       when 'biotin' then 'warning'
       when 'pllpeg' then 'primary'
+      when 'pllpeg_onlyslb' then 'primary'
+      when 'pllpeg_onlyprotein' then 'primary'
       else 'default'
     new Handlebars.SafeString('<span class="label label-'+s+'">'+(prot.fullname)+'</span>')
 
@@ -299,9 +301,9 @@ renderProgress = ->
   timepoints = protocol.timepoints
   totalTime = protocol.totalTime
   from = _.chain(fcs).map((fc)->_.min(_.values(fc))).min().value()
-  to = _.max([d3.time.minute.offset(from, totalTime), _.chain(fcs).map((fc)->_.max(_.values(fc))).max().value()])
+  to = _.max([d3.time.minute.offset(from, totalTime+10), _.chain(fcs).map((fc)->_.max(_.values(fc))).max().value()])
   console.log(from,to)
-  x = d3.scale.linear().domain([from,to]).range([0,750])
+  x = d3.scale.linear().domain([from,to]).range([0,900])
   tn = _.map(timepoints,(t)->t.name)
   gs = svg.selectAll('g').data(fcs,(d)->d._id).enter().append('g')
     .attr('transform',(d,i) ->   

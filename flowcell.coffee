@@ -98,6 +98,7 @@ initProtocols = ->
       (col: 2, row: 1, name: 'Etch coverslip')
       (col: 1, row: 2, name: 'Dry coverslip')
       (col: 3, row: 1, name: 'PLL-PEG')
+      (col: 2, row: 1, name: 'UV exposure')
       (col: 1, row: 2, name: 'TBS in')
       (col: 1, row: 2, name: 'SUV mix')
       (col: 2, row: 1, name: 'SUV')
@@ -108,7 +109,9 @@ initProtocols = ->
       (col: 3, row: 1, name: 'Cells')
     ]
     header2: [
-      'start','wash','start','wash','dry','in','wash','in','wash','in','wash','in','fix','wash'
+      'start','wash','start','wash','dry',
+      'start','wash'
+      'in','wash','in','wash','in','wash','in','fix','wash'
     ]
     timepoints: [
       (name: 'piranha', duration: 5)
@@ -117,6 +120,8 @@ initProtocols = ->
       (name: 'pll',duration: 60)
       (name: 'pll_wash', time: true)
       (name: 'dry_pll')
+      (name: 'uv',duration: 10)
+      (name: 'uv_wash', time: true)
       (name: 'TBS')
       (name: 'SUVmix')
       (name: 'SUV', duration: 40)
@@ -132,6 +137,81 @@ initProtocols = ->
       (name: 'fixwash', time: true)
     ]
     totalTime: 270
+
+  @Protocols.insert
+    name: 'pllpeg_onlyprotein',
+    fullname: 'PLL-PEG (No cells)'
+    header1: [
+      (col: 2, row: 1, name: 'Etch coverslip')
+      (col: 1, row: 2, name: 'Dry coverslip')
+      (col: 3, row: 1, name: 'PLL-PEG')
+      (col: 2, row: 1, name: 'UV exposure')
+      (col: 1, row: 2, name: 'TBS in')
+      (col: 1, row: 2, name: 'SUV mix')
+      (col: 2, row: 1, name: 'SUV')
+      (col: 2, row: 1, name: 'NiCl2')
+      (col: 1, row: 2, name: 'H/F in')
+      (col: 2, row: 1, name: 'Protein')
+    ]
+    header2: [
+      'start','wash','start','wash','dry',
+      'start','wash'
+      'in','wash','in','wash','in','wash'
+    ]
+    timepoints: [
+      (name: 'piranha', duration: 5)
+      (name: 'piranha_wash', time: true)
+      (name: 'dry_piranha')
+      (name: 'pll',duration: 60)
+      (name: 'pll_wash', time: true)
+      (name: 'dry_pll')
+      (name: 'uv',duration: 10)
+      (name: 'uv_wash', time: true)
+      (name: 'TBS')
+      (name: 'SUVmix')
+      (name: 'SUV', duration: 40)
+      (name: 'SUVwash', time: true)
+      (name: 'Ni', duration: 5)
+      (name: 'Niwash', time: true)
+      (name: 'HF')
+      (name: 'protein', duration: 40)
+      (name: 'proteinwash', time: true)
+    ]
+    totalTime: 210
+
+  @Protocols.insert
+    name: 'pllpeg_onlyslb',
+    fullname: 'PLL-PEG (Only SLB)'
+    header1: [
+      (col: 2, row: 1, name: 'Etch coverslip')
+      (col: 1, row: 2, name: 'Dry coverslip')
+      (col: 3, row: 1, name: 'PLL-PEG')
+      (col: 2, row: 1, name: 'UV exposure')
+      (col: 1, row: 2, name: 'TBS in')
+      (col: 1, row: 2, name: 'SUV mix')
+      (col: 2, row: 1, name: 'SUV')
+    ]
+    header2: [
+      'start','wash','start','wash','dry',
+      'start','wash'
+      'in','wash'
+    ]
+    timepoints: [
+      (name: 'piranha', duration: 5)
+      (name: 'piranha_wash', time: true)
+      (name: 'dry_piranha')
+      (name: 'pll',duration: 60)
+      (name: 'pll_wash', time: true)
+      (name: 'dry_pll')
+      (name: 'uv',duration: 10)
+      (name: 'uv_wash', time: true)
+      (name: 'TBS')
+      (name: 'SUVmix')
+      (name: 'SUV', duration: 40)
+      (name: 'SUVwash', time: true)
+    ]
+    totalTime: 150
+
 
   @Protocols.insert
     name: 'default',

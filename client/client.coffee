@@ -271,6 +271,22 @@ Template.list.events(
       Session.set('editing',null)
 )
 
+calcPlannedTime = (fc,n,steps) ->
+#  console.log(fc,n,steps)
+  for v,i in steps
+    if not fc[v.name]
+      break
+  if i < steps.length-1 and i >= 1
+    t = 0
+    for j in [i-1..steps.length-1]
+      if n == steps[j].name
+        break
+      t += steps[j].duration || 5 # 5 min as standard operation time.
+    r = d3.time.minute.offset(fc[steps[i-1].name],t)
+    console.log(r)
+    r
+  else 5
+
 renderProgress = ->
   eid = Session.get('exp_active')
   exp = Exps.findOne(eid)
@@ -279,7 +295,7 @@ renderProgress = ->
   svg = d3.select('svg')
   svg.selectAll('*').remove()
   console.log(fcs.length)
-  color = d3.scale.category20()
+  color = d3.scale.category20b()
   protocol = Protocols.findOne({name: exp.expType || 'default'})
   timepoints = protocol.timepoints
   totalTime = protocol.totalTime
@@ -296,20 +312,23 @@ renderProgress = ->
     .data(tn).enter()
     .append('g')
     .attr('transform',(d,ti,fc_i) ->
-      xx = x(if fcs[fc_i] then fcs[fc_i][d] else null) || -300
+      xx = x(if fcs[fc_i] then (fcs[fc_i][d] || calcPlannedTime(fcs[fc_i],d,timepoints)) else calcPlannedTime(fcs[fc_i],d,timepoints))
       'translate('+xx+',0)'
     )
 
-  gs.append('circle').attr({cx: 0, r:6, opacity: 0.6})
+  gs.append('circle').attr({cx: 0})
+    .attr('r', (d,ti,fc_i) -> if fcs[fc_i][d] then 6 else 6)
+    .style('opacity', (d,ti,fc_i) -> if fcs[fc_i][d] then 1 else 0.4)
     .attr('fill',(d,i)->color(i))
   gs.append('line')
     .attr({x1: 0, y1: 0, y2: 0})
     .attr('x2', (d,ti,fc_i) ->
-      et = fcs[fc_i][nextStep(d,typ)] || d3.time.minute.offset(fcs[fc_i][d], timepoints[ti].duration)
-      x(et)-x(fcs[fc_i][d])
+      et = fcs[fc_i][nextStep(d,typ)] || d3.time.minute.offset((fcs[fc_i][d] || calcPlannedTime(fcs[fc_i],d,timepoints)), timepoints[ti].duration)
+      x(et)-x(fcs[fc_i][d] || calcPlannedTime(fcs[fc_i],d,timepoints))
     )
     .style({stroke: (d,i)->color(i)})
-    .style('stroke-width',1)
+    .style('opacity', (d,ti,fc_i) -> if fcs[fc_i][d] then 1 else 0.4)
+    .style('stroke-width',2)
   svg.append('g')
     .attr('transform',(d,i) -> 'translate ('+x(new Date())+',40)')
     .append('polygon')

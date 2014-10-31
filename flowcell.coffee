@@ -131,7 +131,7 @@ initProtocols = ->
       (name: 'fix', time: true, duration: 10)
       (name: 'fixwash', time: true)
     ]
-    totalTime: 150
+    totalTime: 270
 
   @Protocols.insert
     name: 'default',

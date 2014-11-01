@@ -5,8 +5,6 @@
 
 standard-app-packages
 less
-autopublish
-insecure
 
 mrt:bootstrap-3@0.3.5
 accounts-google
@@ -14,4 +12,4 @@ coffeescript
 underscore
 mrt:moment
 d3
-
+accounts-ui

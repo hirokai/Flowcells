@@ -18,7 +18,8 @@
 </body>
 
 <template name='right_pane'>
-
+  {{> loginButtons}}
+  <br>
   {{#if exp_selected}}
     {{> list}}
   {{else}}

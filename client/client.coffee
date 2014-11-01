@@ -1,6 +1,19 @@
 Session.setDefault('editing',null)
 Session.setDefault('showTime', false)
 
+Meteor.subscribe('exps')
+
+@Flowcells = new Meteor.Collection('flowcells')
+@Config = new Meteor.Collection('config')
+@Exps = new Meteor.Collection('exps')
+@Protocols = new Meteor.Collection('protocols')
+
+Meteor.subscribe('exps')
+Meteor.subscribe('flowcells')
+Meteor.subscribe('config')
+Meteor.subscribe('protocols')
+
+
 Template.exps.helpers
   exps: () -> Exps.find({},{sort: {createOn: -1}})
 
@@ -9,8 +22,6 @@ Template.exps.helpers
   editing: () -> Session.equals('editing',this._id)
 
   protocols: () -> Protocols.find({})
-
-Meteor.loginWithGoogle()
 
 checkTimeLapse = ->
   d = new Date()
@@ -37,7 +48,7 @@ findName = () ->
 
 Template.exps.events =
   'click .add-exp': (e) ->
-    eid = Exps.insert({name: findName(), createOn: new Date(), expType: $(e.target).attr('data-exptype')})
+    eid = Exps.insert({owner: Meteor.userId() || 'sandbox', name: findName(), createOn: new Date(), expType: $(e.target).attr('data-exptype')})
     Session.set('exp_active',eid)
     renderProgress()
     
@@ -242,7 +253,7 @@ Template.list.events(
     eid = Session.get('exp_active')
     num = Flowcells.find({exp: eid}).count() + 1
     e = Session.get('exp_active')
-    Flowcells.insert({name: "FC"+num, createOn: new Date(), exp: e})
+    Flowcells.insert({owner: Meteor.userId() || 'sandbox', name: "FC"+num, createOn: new Date(), exp: e})
     renderProgress()
 
   'click #toggle-time': () ->

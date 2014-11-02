@@ -19,11 +19,12 @@ table {
     width: 50px;
     height: 50px;
     border: 1px solid black;
+    padding: 0px ! important;
     &.name {
       width: 180px;
     }
     &.done {
-      background: #3cb371;
+//      background: #3cb371;
     }
   }
   thead  {
@@ -80,12 +81,25 @@ table {
   height: 300px;
 }
 
+button.undo {
+  height: 40px;
+  width: 40px ! important;
+  margin: 0px 2px;
+}
+
+table td {
+  border: 0px;
+}
   .axis path, .axis line {
     fill: none;
     stroke: #000;
     shape-rendering: crispEdges;
   }
 
+button.do {
+  padding: 10px 15px;
+  margin: 0px;
+}
 
 table small {
   color: #666;

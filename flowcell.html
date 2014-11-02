@@ -52,7 +52,7 @@
     <button class='ebtn remove'>Remove</button>
     {{else}}
     {{name}}
-    <button><span class='glyphicon glyphicon-pencil edit'></span></button>
+    <button class=''><span class='glyphicon glyphicon-pencil edit'></span></button>
     {{/if}}
   </a>
     
@@ -70,7 +70,7 @@
 <h2>{{exp_name}} {{label_type}}</h2>
     <button class='btn btn-default' id='newfc'>New FC</button>
     <button class='btn btn-default' id='toggle-time'>Toggle Time</button>
-  <table>
+  <table class='table'>
     <thead>
       <tr>
       <td colspan='1' rowspan='2'></td>
@@ -95,7 +95,10 @@
       <button class='btn remove'>Remove</button>
     {{else}}
       <span class='name-label'>{{name}}</span>
-      <button class='btn edit'><span class='glyphicon glyphicon-pencil'></span></button>
+      <button class='btn edit'>
+        <i class="mdi-editor-mode-edit"></i>
+        <span class='glyphicon glyphicon-pencil'></span>
+      </button>
     {{/if}}
   </td>
   {{#each timepoints}}

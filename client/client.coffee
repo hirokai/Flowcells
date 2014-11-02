@@ -154,7 +154,7 @@ Template.list.helpers
 
   editing: () -> Session.get('editing') == this._id
 
-  done: (name,fc) -> if fc[name]? then "done undo" else ""
+  done: (name,fc) -> if fc[name]? then "done" else ""
 
   cell: (name,fc) ->
     eid = Session.get('exp_active')
@@ -165,13 +165,13 @@ Template.list.helpers
       if Session.equals('showTime',true)
         new Handlebars.SafeString(formatDate(t))
       else
-        ""
+        new Handlebars.SafeString('<button class="btn undo btn-success"><i class="fa fa-star"> </i></button>')
     else
       ps = prevStep(name,typ)
       timepoints = Protocols.findOne({name: typ}).timepoints
 #      console.log(timepoints[0])
       if name == timepoints[0].name || fc[ps]
-        new Handlebars.SafeString("<button class='do' data-name='"+name+"'>Do</button>");
+        new Handlebars.SafeString("<button class='btn do btn-raised' data-name='"+name+"'>Do</button>");
       else
         ""
 
@@ -184,7 +184,7 @@ Template.list.helpers
       if Session.equals('showTime',true)
         new Handlebars.SafeString(formatDate(t))
       else
-        ""
+        new Handlebars.SafeString('<button class="btn undo btn-success"><i class="fa fa-star"> </i></button>')
     else
       config = Config.findOne()
       warning = {yellow: 3}
@@ -199,10 +199,10 @@ Template.list.helpers
           c = 'late'
         else if rest < 1000*60*warning.yellow # within 3 min.
           c = 'coming'
-        new Handlebars.SafeString("<button class='do "+c+"' data-name='"+name+"'>"+formatMin(rest)+"</button>")
+        new Handlebars.SafeString("<button class='do btn btn-raised "+c+"' data-name='"+name+"'>"+formatMin(rest)+"</button>")
       else
         if Flowcells.findOne(fc._id)[prevStep(name,typ)]
-            new Handlebars.SafeString("<button class='do "+c+"' data-name='"+name+"'>"+formatMin(rest)+"</button>")
+            new Handlebars.SafeString("<button class='do btn btn-raised "+c+"' data-name='"+name+"'>"+formatMin(rest)+"</button>")
         else ""
 
 # You can choose "Fixing cell is not done" option.
@@ -241,7 +241,8 @@ Template.list.events(
     renderProgress()
  
   'click .undo': (e) ->
-    n = $(e.target).attr('data-name')
+    n = $(e.target).parents('td').attr('data-name')
+    console.log($(e.target),$(e.target).parents('td'))
     fid = $(e.target).parents('tr').attr('data-id')
     if window.confirm('Are you sure to undo this?: '+n)
       obj = {}

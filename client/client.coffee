@@ -110,6 +110,14 @@ nextStep = (n,typ) ->
       break
   if i < steps.length-1 then steps[i+1].name else undefined
 
+findIndex = (vs,pred) ->
+  r = -1
+  for v,i in vs
+    if pred(v)
+      r = i
+      break
+  return r
+
 #
 # Flowcells
 #
@@ -165,7 +173,9 @@ Template.list.helpers
       if Session.equals('showTime',true)
         new Handlebars.SafeString(formatDate(t))
       else
-        new Handlebars.SafeString('<button class="btn undo btn-success"><i class="fa fa-star"> </i></button>')
+        steps = Protocols.findOne({name: (typ || 'default')}).timepoints
+        idx = findIndex(steps,(s) -> s.name == name)
+        new Handlebars.SafeString('<button class="btn undo btn-success" style="background:'+color(idx)+';"><i class="fa fa-star"> </i></button>')
     else
       ps = prevStep(name,typ)
       timepoints = Protocols.findOne({name: typ}).timepoints
@@ -184,7 +194,9 @@ Template.list.helpers
       if Session.equals('showTime',true)
         new Handlebars.SafeString(formatDate(t))
       else
-        new Handlebars.SafeString('<button class="btn undo btn-success"><i class="fa fa-star"> </i></button>')
+        steps = Protocols.findOne({name: (typ || 'default')}).timepoints
+        idx = findIndex(steps,(s) -> s.name == name)
+        new Handlebars.SafeString('<button class="btn undo btn-success" style="background:'+color(idx)+';"><i class="fa fa-star"> </i></button>')
     else
       config = Config.findOne()
       warning = {yellow: 3}
@@ -300,6 +312,8 @@ calcPlannedTime = (fc,n,steps) ->
     d3.time.minute.offset(fc[steps[i-1].name],t)
   else defaultInterval
 
+color = d3.scale.category20b()
+
 renderProgress = ->
   eid = Session.get('exp_active')
   exp = Exps.findOne(eid)
@@ -307,8 +321,6 @@ renderProgress = ->
   fcs = Flowcells.find({exp: eid},{sort: {createOn: 1}}).fetch()
   svg = d3.select('svg')
   svg.selectAll('*').remove()
-  console.log(fcs.length)
-  color = d3.scale.category20b()
   protocol = Protocols.findOne({name: exp.expType || 'default'})
   timepoints = protocol.timepoints
   totalTime = protocol.totalTime

@@ -158,7 +158,7 @@ Template.list.helpers
       when 'pllpeg_onlyslb' then 'primary'
       when 'pllpeg_onlyprotein' then 'primary'
       else 'default'
-    new Handlebars.SafeString('<span class="label label-'+s+'">'+(prot.fullname)+'</span>')
+    new Handlebars.SafeString('<span class="exptype exptype-'+s+'">'+(prot.fullname)+'</span>')
 
   editing: () -> Session.get('editing') == this._id
 

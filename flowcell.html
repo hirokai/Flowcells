@@ -5,7 +5,7 @@
 </head>
 
 <body>
-  <div class="container">
+  <div class="container-fluid">
     <div id='exps' class='row col-md-2'>
       <h3>Experiments</h3>
       {{> exps}}
@@ -68,7 +68,7 @@
 
 <template name="list">
 <h2>{{exp_name}} {{label_type}}</h2>
-    <button class='btn btn-default' id='newfc'>New FC</button>
+    <button class='btn btn-primary' id='newfc'>New FC</button>
     <button class='btn btn-default' id='toggle-time'>Toggle Time</button>
   <table class='table'>
     <thead>

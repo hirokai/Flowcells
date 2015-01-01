@@ -3,45 +3,44 @@
 @Config = new Meteor.Collection('config')
 @Exps = new Meteor.Collection('exps')
 
-tobj = 
-	insert: (uid,obj) -> obj.owner == (uid || 'sandbox')
-	update: (uid,obj) -> obj.owner == (uid || 'sandbox')
-	remove: (uid,obj) -> obj.owner == (uid || 'sandbox')
+tobj =
+  insert: (uid, obj) -> obj.owner == (uid || 'sandbox')
+  update: (uid, obj) -> obj.owner == (uid || 'sandbox')
+  remove: (uid, obj) -> obj.owner == (uid || 'sandbox')
 
 @Protocols.allow
-	insert: () -> false
-	update: (uid,obj) -> false
-	remove: () -> false
-	
+  insert: () -> false
+  update: (uid, obj) -> false
+  remove: () -> false
+
 @Flowcells.allow tobj
 @Exps.allow tobj
 @Config.allow tobj
 
 Meteor.publish("exps", ->
   Exps.find({$or: [{owner: this.userId || 'sandbox'}, {shared: this.userId}]})
-  )
+)
 
 Meteor.publish("flowcells", ->
   Flowcells.find({$or: [{owner: this.userId || 'sandbox'}, {shared: this.userId}]})
-  )
+)
 
 Meteor.publish("protocols", ->
   Protocols.find({})
-  )
+)
 
 Meteor.publish("config", ->
   Config.find({})
-  )
+)
 
 Meteor.startup ->
-	# code to run on server at startup
-
-	@Config.remove({})
-	@Config.insert
-	  duration: {SUV: 40, Ni: 5, protein: 40, heating: 20, cells: 20, fix: 10}
-	  warning: {yellow: 3}
-	#    if @Protocols.find({}).count() == 0
-	initProtocols()
+  # code to run on server at startup
+  @Config.remove({})
+  @Config.insert
+    duration: {SUV: 40, Ni: 5, protein: 40, heating: 20, cells: 20, fix: 10}
+    warning: {yellow: 3}
+  #    if @Protocols.find({}).count() == 0
+  initProtocols()
 
 truef = -> true
 
@@ -62,10 +61,10 @@ initProtocols = ->
       (col: 1, row: 2, name: 'Heating')
       (col: 3, row: 1, name: 'Cells')
     ]
-    header2:[
-      'in','wash','in','wash','in','wash','in','wash','in','fix','wash'
+    header2: [
+      'in', 'wash', 'in', 'wash', 'in', 'wash', 'in', 'wash', 'in', 'fix', 'wash'
     ]
-    timepoints: [ 
+    timepoints: [
       (name: 'dry')
       (name: 'TBS')
       (name: 'SUVmix')
@@ -103,18 +102,18 @@ initProtocols = ->
       (col: 3, row: 1, name: 'Cells')
     ]
     header2: [
-      'start','wash','start','wash','dry',
-      'start','wash'
-      'in','wash','in','wash','in','wash','in','fix','wash'
+      'start', 'wash', 'start', 'wash', 'dry',
+      'start', 'wash'
+      'in', 'wash', 'in', 'wash', 'in', 'wash', 'in', 'fix', 'wash'
     ]
     timepoints: [
       (name: 'piranha', duration: 5)
       (name: 'piranha_wash', time: true)
       (name: 'dry_piranha')
-      (name: 'pll',duration: 60)
+      (name: 'pll', duration: 60)
       (name: 'pll_wash', time: true)
       (name: 'dry_pll')
-      (name: 'uv',duration: 10)
+      (name: 'uv', duration: 10)
       (name: 'uv_wash', time: true)
       (name: 'TBS')
       (name: 'SUVmix')
@@ -148,18 +147,18 @@ initProtocols = ->
       (col: 2, row: 1, name: 'Protein')
     ]
     header2: [
-      'start','wash','start','wash','dry',
-      'start','wash'
-      'in','wash','in','wash','in','wash'
+      'start', 'wash', 'start', 'wash', 'dry',
+      'start', 'wash'
+      'in', 'wash', 'in', 'wash', 'in', 'wash'
     ]
     timepoints: [
       (name: 'piranha', duration: 5)
       (name: 'piranha_wash', time: true)
       (name: 'dry_piranha')
-      (name: 'pll',duration: 60)
+      (name: 'pll', duration: 60)
       (name: 'pll_wash', time: true)
       (name: 'dry_pll')
-      (name: 'uv',duration: 10)
+      (name: 'uv', duration: 10)
       (name: 'uv_wash', time: true)
       (name: 'TBS')
       (name: 'SUVmix')
@@ -186,18 +185,18 @@ initProtocols = ->
       (col: 2, row: 1, name: 'SUV')
     ]
     header2: [
-      'start','wash','start','wash','dry',
-      'start','wash'
-      'in','wash'
+      'start', 'wash', 'start', 'wash', 'dry',
+      'start', 'wash'
+      'in', 'wash'
     ]
     timepoints: [
       (name: 'piranha', duration: 5)
       (name: 'piranha_wash', time: true)
       (name: 'dry_piranha')
-      (name: 'pll',duration: 60)
+      (name: 'pll', duration: 60)
       (name: 'pll_wash', time: true)
       (name: 'dry_pll')
-      (name: 'uv',duration: 10)
+      (name: 'uv', duration: 10)
       (name: 'uv_wash', time: true)
       (name: 'TBS')
       (name: 'SUVmix')
@@ -222,7 +221,7 @@ initProtocols = ->
       (col: 3, row: 1, name: 'Cells')
     ]
     header2: [
-      'in','wash','in','wash','in','wash','in','fix','wash'
+      'in', 'wash', 'in', 'wash', 'in', 'wash', 'in', 'fix', 'wash'
     ]
     timepoints: [
       (name: 'dry')

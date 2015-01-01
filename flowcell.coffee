@@ -1,6 +1,5 @@
 
 
-
 # ////////// Helpers for in-place editing //////////
 
 # Returns an event map that handles the "escape" and "return" keys and

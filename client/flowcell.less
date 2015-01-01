@@ -1,12 +1,12 @@
-body{
+body {
   padding: 20px;
 }
 
 #exps {
   .nav button {
     float: right;
-   // background: #cce;
-  //  padding: 3px;
+    // background: #cce;
+    //  padding: 3px;
     &.ebtn {
       font-size: 10px;
     }
@@ -24,15 +24,17 @@ body{
 .exptype-primary {
   color: #337ab7;
 }
+
 .exptype-warning {
   color: #f0ad4e;
 }
+
 .exptype-default {
   color: #444;
 }
 
 table {
-  td,th {
+  td, th {
     width: 50px;
     height: 50px;
     border: 1px solid black;
@@ -41,16 +43,16 @@ table {
       width: 180px;
     }
     &.done {
-//      background: #3cb371;
+      //      background: #3cb371;
     }
   }
-  thead  {
+  thead {
     text-align: center;
   }
   span.glyphicon {
-   // width: 50px;
-   // height: 30px;
-   cursor: pointer;
+    // width: 50px;
+    // height: 30px;
+    cursor: pointer;
     &:hover {
       background: pink;
     }
@@ -80,14 +82,13 @@ table {
 #chat_history {
   width: 600px;
   height: 300px;
-//  background: #;
+  //  background: #;
 }
 
 #chat_enter {
   width: 600px;
   height: 60px;
 }
-
 
 #progress {
   width: 1100px;
@@ -103,11 +104,12 @@ button.undo {
 table td {
   border: 0px;
 }
-  .axis path, .axis line {
-    fill: none;
-    stroke: #000;
-    shape-rendering: crispEdges;
-  }
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
 
 button.do {
   padding: 10px 15px;
@@ -119,19 +121,19 @@ table small {
 }
 
 @-webkit-keyframes pulse {
- from {
-   opacity: 1.0;/*透明度100%*/
- }
- to {
-   opacity: 0.8;/*透明度80%*/
- }
+  from {
+    opacity: 1.0; /*透明度100%*/
+  }
+  to {
+    opacity: 0.8; /*透明度80%*/
+  }
 }
 
-.blinking{
--webkit-animation-name: pulse;/* 実行する名前 */
--webkit-animation-duration: 2s;/* 0.3秒かけて実行 */
--webkit-animation-iteration-count:infinite;/* 何回実行するか。infiniteで無限 */
--webkit-animation-timing-function:ease-in-out;/* イーズインアウト */
--webkit-animation-direction: alternate;/* alternateにするとアニメーションが反復 */
--webkit-animation-delay: 0s; /* 実行までの待ち時間 */
+.blinking {
+  -webkit-animation-name: pulse; /* 実行する名前 */
+  -webkit-animation-duration: 2s; /* 0.3秒かけて実行 */
+  -webkit-animation-iteration-count: infinite; /* 何回実行するか。infiniteで無限 */
+  -webkit-animation-timing-function: ease-in-out; /* イーズインアウト */
+  -webkit-animation-direction: alternate; /* alternateにするとアニメーションが反復 */
+  -webkit-animation-delay: 0s; /* 実行までの待ち時間 */
 }

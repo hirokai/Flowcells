@@ -1,123 +1,123 @@
 <head>
-  <title>Flowcell preparation</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+    <title>Flowcell preparation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 </head>
 
 <body>
-  <div class="container-fluid">
+<div class="container-fluid">
     <div id='exps' class='row col-md-2'>
-      <h3>Experiments</h3>
-      {{> exps}}
-</div>    
-<div class='row col-md-10'>
-  {{> right_pane}}
-</div>
+        <h3>Experiments</h3>
+        {{> exps}}
+    </div>
+    <div class='row col-md-10'>
+        {{> right_pane}}
+    </div>
 </div>
 
 </body>
 
 <template name='right_pane'>
-  {{> loginButtons}}
-  <br>
-  {{#if exp_selected}}
-    {{> list}}
-  {{else}}
-  Choose exp...
-  {{/if}}
- </template>
+    {{> loginButtons}}
+    <br>
+    {{#if exp_selected}}
+        {{> list}}
+    {{else}}
+        Choose exp...
+    {{/if}}
+</template>
 
 <template name='exps'>
-  <!-- Split button -->
-<div class="btn-group">
-  <button type="button" class="btn btn-primary add-exp" data-exptype='default'>Add exp</button>
-  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-    <span class="caret"></span>
-    <span class="sr-only">Toggle Dropdown</span>
-  </button>
-  <ul class="dropdown-menu" role="menu">
-    {{#each protocols}}
-      <li><a href="#" class='add-exp' data-exptype='{{name}}'>{{fullname}}</a></li>
-    {{/each}}
-  </ul>
-</div>
-<ul class="nav nav-pills nav-stacked">
-  {{#each exps}}
-  <li class="{{active}}">
-  <a href="#" class='expentry'>
-    {{#if editing}}
-    <input value='{{name}}' id='nameinput'/>
-    <button class='ebtn ok'>OK</button>
-    <button class='ebtn cancel'>Cancel</button>
-    <button class='ebtn remove'>Remove</button>
-    {{else}}
-    {{name}}
-    <button class=''><span class='glyphicon glyphicon-pencil edit'></span></button>
-    {{/if}}
-  </a>
-    
-  </li>
-  {{/each}}
-  <li><a href="#" id='add-exp'>
-  </a></li>
-  <li>
-</li>
+    <!-- Split button -->
+    <div class="btn-group">
+        <button type="button" class="btn btn-primary add-exp" data-exptype='default'>Add exp</button>
+        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+            <span class="caret"></span>
+            <span class="sr-only">Toggle Dropdown</span>
+        </button>
+        <ul class="dropdown-menu" role="menu">
+            {{#each protocols}}
+                <li><a href="#" class='add-exp' data-exptype='{{name}}'>{{fullname}}</a></li>
+            {{/each}}
+        </ul>
+    </div>
+    <ul class="nav nav-pills nav-stacked">
+        {{#each exps}}
+            <li class="{{active}}">
+                <a href="#" class='expentry'>
+                    {{#if editing}}
+                        <input value='{{name}}' id='nameinput'/>
+                        <button class='ebtn ok'>OK</button>
+                        <button class='ebtn cancel'>Cancel</button>
+                        <button class='ebtn remove'>Remove</button>
+                    {{else}}
+                        {{name}}
+                        <button class=''><span class='glyphicon glyphicon-pencil edit'></span></button>
+                    {{/if}}
+                </a>
 
-</ul>
+            </li>
+        {{/each}}
+        <li><a href="#" id='add-exp'>
+        </a></li>
+        <li>
+        </li>
+
+    </ul>
 </template>
 
 <template name="list">
-<h2>{{exp_name}} {{label_type}}</h2>
+    <h2>{{exp_name}} {{label_type}}</h2>
     <button class='btn btn-primary' id='newfc'>New FC</button>
     <button class='btn btn-default' id='toggle-time'>Toggle Time</button>
-  <table class='table'>
-    <thead>
-      <tr>
-      <td colspan='1' rowspan='2'></td>
-      {{#each header1}}
-        <td colspan='{{col}}' rowspan='{{row}}'>{{name}}</td>
-      {{/each}}
-    </tr>
-      <tr>
-      {{#each header2}}
-        <td>{{.}}</td>
-      {{/each}}
-    </tr>
-    </thead>
-<tbody>
-  {{#each flowcells}}
-<tr data-id='{{_id}}'>
-  <td class='name'>
-    {{#if editing}}
-      <input type='input' class='name-input' value='{{name}}'/>
-      <button class='btn ok'>OK</button>
-      <button class='btn cancel'>Cancel</button>
-      <button class='btn remove'>Remove</button>
-    {{else}}
-      <span class='name-label'>{{name}}</span>
-      <button class='btn edit'>
-        <i class="mdi-editor-mode-edit"></i>
-        <span class='glyphicon glyphicon-pencil'></span>
-      </button>
-    {{/if}}
-  </td>
-  {{#each timepoints}}
-    {{#with context=this parent=..}}
-    <td class='{{done context.name parent}}' data-name='{{context.name}}'>
-        {{#if context.time}}
-          {{celltime context.name parent}}
-        {{else}}
-          {{cell context.name parent}}
-        {{/if}}
-    </td>
-    {{/with}}
-  {{/each}}
- 
-</tr>
-  {{/each}}
-</tbody>
-      </table>
+    <table class='table'>
+        <thead>
+        <tr>
+            <td colspan='1' rowspan='2'></td>
+            {{#each header1}}
+                <td colspan='{{col}}' rowspan='{{row}}'>{{name}}</td>
+            {{/each}}
+        </tr>
+        <tr>
+            {{#each header2}}
+                <td>{{.}}</td>
+            {{/each}}
+        </tr>
+        </thead>
+        <tbody>
+        {{#each flowcells}}
+            <tr data-id='{{_id}}'>
+                <td class='name'>
+                    {{#if editing}}
+                        <input type='input' class='name-input' value='{{name}}'/>
+                        <button class='btn ok'>OK</button>
+                        <button class='btn cancel'>Cancel</button>
+                        <button class='btn remove'>Remove</button>
+                    {{else}}
+                        <span class='name-label'>{{name}}</span>
+                        <button class='btn edit'>
+                            <i class="mdi-editor-mode-edit"></i>
+                            <span class='glyphicon glyphicon-pencil'></span>
+                        </button>
+                    {{/if}}
+                </td>
+                {{#each timepoints}}
+                    {{#with context=this parent=..}}
+                        <td class='{{done context.name parent}}' data-name='{{context.name}}'>
+                            {{#if context.time}}
+                                {{celltime context.name parent}}
+                            {{else}}
+                                {{cell context.name parent}}
+                            {{/if}}
+                        </td>
+                    {{/with}}
+                {{/each}}
 
-      <svg id='progress'></svg>
+            </tr>
+        {{/each}}
+        </tbody>
+    </table>
+
+    <svg id='progress'></svg>
 </template>
 

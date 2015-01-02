@@ -1,5 +1,6 @@
 Session.setDefault('editing', null)
 Session.setDefault('showTime', false)
+Session.setDefault('guideMode', false)
 
 Meteor.subscribe('exps')
 
@@ -12,6 +13,21 @@ Meteor.subscribe('exps')
 Meteor.subscribe('flowcells')
 Meteor.subscribe('config')
 Meteor.subscribe('protocols')
+
+
+UI.body.helpers
+  hiddenOnGuide: () ->
+    if Session.get('guideMode') then 'hidden' else ''
+  colRight: () ->
+    if Session.get('guideMode') then 'col-md-12' else 'col-md-10'
+  classGuide: () ->
+    if Session.get('guideMode') then 'guide' else ''
+
+
+UI.body.events
+  'click #toggle-guide': () ->
+    Session.set('guideMode', !Session.get('guideMode'))
+    $('body').toggleClass('guide')
 
 
 Template.exps.helpers
@@ -243,6 +259,14 @@ Template.list.helpers
         else
           "No!"
 
+  guideDisplay: () ->
+    console.log( Session.get('guideMode'))
+    if Session.get('guideMode') then 'block' else 'none'
+
+  hiddenOnGuide: () ->
+    if Session.get('guideMode') then 'hidden' else ''
+
+
 Template.list.events(
   'click button.do': (e) ->
     n = $(e.target).attr('data-name')
@@ -299,7 +323,6 @@ Template.list.events(
 
 calcPlannedTime = (fc, n, steps) ->
   defaultInterval = 5
-  #  console.log(fc,n,steps)
   for v,i in steps
     if not fc[v.name]
       break
@@ -374,3 +397,83 @@ renderProgress = ->
 
 Template.list.rendered = ->
   renderProgress()
+
+
+
+Template.guide.helpers
+  formatTime: (tp) ->
+    t = tp.time
+#    console.log(t)
+    if t == null
+      '('+Math.max(0,Math.floor((Session.get('time')-tp.lasttime)/(1000*60)))+' min since the last step)'
+    else
+      if t >= 1000*60*60
+        moment(t).format('h:mm:ss') + ' from now'
+      else if t < -1000*60*60
+        moment(-t).format('h:mm:ss') + ' past'
+      else if t < 0
+        moment(-t).format('m:ss') + ' past!'
+      else
+        moment(t).format('m:ss') + ' from now.'
+
+  mynextsteps: () ->
+    eid = Session.get('exp_active')
+    exp = if eid then Exps.findOne(eid) else null
+    typ = exp?.expType || 'default'
+    steps = []
+    fcs = Flowcells.find({exp: eid}, {sort: {createOn: 1}}).fetch()
+    timepoints = Protocols.findOne({name: (typ || 'default')}).timepoints
+    for fc in fcs
+      for tp2 in timepoints
+        t = fc[tp2.name]
+        config = Config.findOne()
+        warning = {yellow: 3}
+        tp = fc[prevStep(tp2.name, typ)]
+        if !t and tp
+          dur = (_.findWhere(timepoints, {name: prevStep(tp2.name, typ)})?.duration || 0) * 60 * 1000
+          elapsed = Session.get('time') - tp
+          if dur == 0
+            steps.push({fc: fc,name: tp2.name, fullname: tp2.fullname || tp2.name , time: null, lasttime: tp})
+          else
+            rest = dur - elapsed
+            c = ''
+  #          console.log(dur,elapsed,rest)
+            if rest < 0
+              c = 'late'
+            else if rest < 1000 * 60 * warning.yellow # within 3 min.
+              c = 'coming'
+            steps.push({fc: fc,name: tp2.name, fullname: tp2.fullname || tp2.name , time: rest, lasttime: tp})
+    steps
+
+  finishEstimate: () ->
+    eid = Session.get('exp_active')
+    exp = Exps.findOne(eid)
+    protocol = Protocols.findOne({name: exp.expType || 'default'})
+    fcs = Flowcells.find({exp: eid}, {sort: {createOn: 1}}).fetch()
+    last = protocol.timepoints[protocol.timepoints.length-1].name
+    ts = []
+    for fc in fcs
+      ts.push calcPlannedTime(fc,last,protocol.timepoints)
+    moment(_.max(ts)).format('h:mm')
+
+  blinking: (step) ->
+    if step.time
+      if step.time < -1000*60
+        'step-late2'
+      else if step.time < 0
+        'step-late'
+      else if step.time < 1000*60*3
+        'step-coming'
+      else
+        ''
+    else
+      ''
+
+Template.guide.events
+  'click button.do': (e) ->
+    n = $(e.target).attr('data-name')
+    fid = $(e.target).parents('tr').attr('data-id')
+    obj = {}
+    obj[n] = new Date()
+    Flowcells.update(fid, {$set: obj})
+    renderProgress()

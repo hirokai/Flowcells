@@ -6,20 +6,20 @@
 
 <body>
 <div class="container-fluid">
-    <div id='exps' class='row col-md-2'>
+    <div id='exps' class='row col-md-2 {{hiddenOnGuide}}'>
         <h3>Experiments</h3>
         {{> exps}}
     </div>
-    <div class='row col-md-10'>
+    <div class='row {{colRight}}'>
         {{> right_pane}}
     </div>
-</div>
+</div></body>
 
-</body>
 
 <template name='right_pane'>
     {{> loginButtons}}
     <br>
+    <button class='btn btn-default' style='float:right;' id='toggle-guide'>Toggle Guide</button>
     {{#if exp_selected}}
         {{> list}}
     {{else}}
@@ -68,6 +68,9 @@
 
 <template name="list">
     <h2>{{exp_name}} {{label_type}}</h2>
+    <div id="guide" style='display: {{guideDisplay}}'>
+        {{> guide}}
+    </div>
     <button class='btn btn-primary' id='newfc'>New FC</button>
     <button class='btn btn-default' id='toggle-time'>Toggle Time</button>
     <table class='table'>
@@ -121,3 +124,27 @@
     <svg id='progress'></svg>
 </template>
 
+
+<template name="guide">
+    <h2>Next steps</h2>
+    <table class="table nextstep col-md-12">
+        <thead>
+            <tr>
+                <th>Flowcell</th>
+                <th>Step</th>
+                <th>Time</th>
+            </tr>
+        </thead>
+        {{#each mynextsteps}}
+            <tr class="{{blinking .}}" data-id="{{fc._id}}">
+                <td class="col-md-2">{{fc.name}}</td>
+                <td class="col-md-5">{{fullname}}</td>
+                <td class="col-md-5">
+                    <button class='btn btn-primary do' data-name="{{name}}">Do</button>
+                    {{formatTime .}}
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+    <p>Expected finish time: {{finishEstimate}}</p>
+</template>

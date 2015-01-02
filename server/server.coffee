@@ -47,7 +47,8 @@ truef = -> true
 initProtocols = ->
   @Protocols.remove({})
   @Protocols.insert
-    name: 'biotin',
+    name: 'biotin'
+    version: '2'
     fullname: 'Biotin'
     header1: [
       (col: 1, row: 2, name: 'Dry coverslip')
@@ -85,7 +86,8 @@ initProtocols = ->
     totalTime: 210
 
   @Protocols.insert
-    name: 'pllpeg',
+    name: 'pllpeg'
+    version: '2'
     fullname: 'PLL-PEG'
     header1: [
       (col: 2, row: 1, name: 'Etch coverslip')
@@ -107,32 +109,32 @@ initProtocols = ->
       'in', 'wash', 'in', 'wash', 'in', 'wash', 'in', 'fix', 'wash'
     ]
     timepoints: [
-      (name: 'piranha', duration: 5)
-      (name: 'piranha_wash', time: true)
-      (name: 'dry_piranha')
-      (name: 'pll', duration: 60)
-      (name: 'pll_wash', time: true)
-      (name: 'dry_pll')
-      (name: 'uv', duration: 10)
-      (name: 'uv_wash', time: true)
-      (name: 'TBS')
-      (name: 'SUVmix')
-      (name: 'SUV', duration: 40)
-      (name: 'SUVwash', time: true)
-      (name: 'Ni', duration: 5)
-      (name: 'Niwash', time: true)
-      (name: 'HF')
-      (name: 'protein', duration: 40)
-      (name: 'proteinwash', time: true)
-      (name: 'heating', duration: 20)
-      (name: 'cells', time: true, duration: 20)
-      (name: 'fix', time: true, duration: 10)
-      (name: 'fixwash', time: true)
+      (name: 'piranha', duration: 5, fullname: 'Piranha etching')
+      (name: 'piranha_wash', time: true, fullname: 'Rinse piranha')
+      (name: 'dry_piranha', fullname: 'Dry coverslip')
+      (name: 'pll', duration: 60, fullname: 'PLL-PEG incubation')
+      (name: 'pll_wash', time: true, fullname: 'PLL-PEG wash and dry')
+      (name: 'uv', duration: 10, fullname: 'Deep UV exposure (10 min)')
+      (name: 'uv_wash', time: true, fullname: 'Wash coverslip')
+      (name: 'TBS', fullname: 'Flow in 1x TBS (2 mL)')
+      (name: 'SUVmix', fullname: 'Mix SUVs with 10x TBS')
+      (name: 'SUV', duration: 40, fullname: 'Flow in SUVs')
+      (name: 'SUVwash', time: true, fullname: 'Wash SUVs (3 mL)')
+      (name: 'Ni', duration: 5, fullname: 'Flow in NiCl2')
+      (name: 'Niwash', time: true, fullname: 'Wash NiCl2 (3 mL)')
+      (name: 'HF', duration: 20, fullname: 'Flow in HBS/FBS (2 mL)')
+      (name: 'protein', time: true, duration: 40, fullname: 'Flow in proteins')
+      (name: 'proteinwash', time: true, fullname: 'Wash proteins (2 mL)')
+      (name: 'heating', duration: 20, fullname: 'Start heating FC')
+      (name: 'cells', time: true, duration: 20, fullname: 'Inject cells')
+      (name: 'fix', time: true, duration: 10, fullname: 'Fix cells')
+      (name: 'fixwash', time: true, fullname: 'Wash formaldehyde (2 mL)')
     ]
     totalTime: 270
 
   @Protocols.insert
     name: 'pllpeg_onlyprotein',
+    version: '2'
     fullname: 'PLL-PEG (No cells)'
     header1: [
       (col: 2, row: 1, name: 'Etch coverslip')
@@ -174,6 +176,7 @@ initProtocols = ->
 
   @Protocols.insert
     name: 'pllpeg_onlyslb',
+    version: '2'
     fullname: 'PLL-PEG (Only SLB)'
     header1: [
       (col: 2, row: 1, name: 'Etch coverslip')
@@ -191,8 +194,8 @@ initProtocols = ->
     ]
     timepoints: [
       (name: 'piranha', duration: 5)
-      (name: 'piranha_wash', time: true)
-      (name: 'dry_piranha')
+      (name: 'piranha_wash', time: true, fullname: 'Rinse piranha')
+      (name: 'dry_piranha', fullname: 'Dry coverslip')
       (name: 'pll', duration: 60)
       (name: 'pll_wash', time: true)
       (name: 'dry_pll')
@@ -207,7 +210,8 @@ initProtocols = ->
 
 
   @Protocols.insert
-    name: 'default',
+    name: 'default'
+    version: '2'
     fullname: 'Default'
     header1: [
       (col: 1, row: 2, name: 'Dry coverslip')
@@ -224,19 +228,19 @@ initProtocols = ->
       'in', 'wash', 'in', 'wash', 'in', 'wash', 'in', 'fix', 'wash'
     ]
     timepoints: [
-      (name: 'dry')
-      (name: 'TBS')
-      (name: 'SUVmix')
-      (name: 'SUV', duration: 40)
-      (name: 'SUVwash', time: true)
-      (name: 'Ni', duration: 5)
-      (name: 'Niwash', time: true)
-      (name: 'HF')
-      (name: 'protein', duration: 40)
-      (name: 'proteinwash', time: true)
-      (name: 'heating', duration: 20)
-      (name: 'cells', time: true, duration: 20)
-      (name: 'fix', time: true, duration: 10)
-      (name: 'fixwash', time: true)
+      (name: 'dry', fullname: 'Dry coverslip')
+      (name: 'TBS', fullname: 'Flow in 1x TBS (2 mL)')
+      (name: 'SUVmix', fullname: 'Mix SUVs with 10x TBS')
+      (name: 'SUV', duration: 40, fullname: 'Flow in SUVs')
+      (name: 'SUVwash', time: true, fullname: 'Wash SUVs (3 mL)')
+      (name: 'Ni', duration: 5, fullname: 'Flow in NiCl2')
+      (name: 'Niwash', time: true, fullname: 'Wash NiCl2 (3 mL)')
+      (name: 'HF', duration: 20, fullname: 'Flow in HBS/FBS (2 mL)')
+      (name: 'protein', time: true, duration: 40, fullname: 'Flow in proteins')
+      (name: 'proteinwash', time: true, fullname: 'Wash proteins (2 mL)')
+      (name: 'heating', duration: 20, fullname: 'Start heating FC')
+      (name: 'cells', time: true, duration: 20, fullname: 'Inject cells')
+      (name: 'fix', time: true, duration: 10, fullname: 'Fix cells')
+      (name: 'fixwash', time: true, fullname: 'Wash formaldehyde (2 mL)')
     ]
     totalTime: 180

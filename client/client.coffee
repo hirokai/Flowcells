@@ -1,7 +1,7 @@
 Session.setDefault('editing', null)
 Session.setDefault('showTime', false)
 Session.setDefault('guideMode', false)
-
+Session.setDefault('guideCurrentFC', 0)
 Meteor.subscribe('exps')
 
 @Flowcells = new Meteor.Collection('flowcells')
@@ -14,6 +14,27 @@ Meteor.subscribe('flowcells')
 Meteor.subscribe('config')
 Meteor.subscribe('protocols')
 
+moveSelectedFC = (delta) ->
+  c = Session.get("guideCurrentFC")
+  n = c + delta
+  steps = get_mynextsteps()
+  if n >= 0 and n < steps.length
+    Session.set("guideCurrentFC",n)
+  console.log(Session.get("guideCurrentFC"))
+
+
+Meteor.startup () ->
+  $(document).on 'keydown', (e) ->
+    console.log(e)
+    if e.keyCode == 38  # up arrow
+      moveSelectedFC(-1)
+      e.preventDefault()
+    else if e.keyCode == 40  # down arrow
+      moveSelectedFC(1)
+      e.preventDefault()
+    else if e.keyCode == 32  # space
+      $('.nextstep .selected .btn').click()
+      e.preventDefault()
 
 UI.body.helpers
   hiddenOnGuide: () ->
@@ -399,6 +420,34 @@ Template.list.rendered = ->
   renderProgress()
 
 
+get_mynextsteps = () ->
+  eid = Session.get('exp_active')
+  exp = if eid then Exps.findOne(eid) else null
+  typ = exp?.expType || 'default'
+  steps = []
+  fcs = Flowcells.find({exp: eid}, {sort: {createOn: 1}}).fetch()
+  timepoints = Protocols.findOne({name: (typ || 'default')}).timepoints
+  for fc in fcs
+    for tp2 in timepoints
+      t = fc[tp2.name]
+      config = Config.findOne()
+      warning = {yellow: 3}
+      tp = fc[prevStep(tp2.name, typ)]
+      if !t and tp
+        dur = (_.findWhere(timepoints, {name: prevStep(tp2.name, typ)})?.duration || 0) * 60 * 1000
+        elapsed = Session.get('time') - tp
+        if dur == 0
+          steps.push({fc: fc,name: tp2.name, fullname: tp2.fullname || tp2.name , time: null, lasttime: tp})
+        else
+          rest = dur - elapsed
+          c = ''
+          #          console.log(dur,elapsed,rest)
+          if rest < 0
+            c = 'late'
+          else if rest < 1000 * 60 * warning.yellow # within 3 min.
+            c = 'coming'
+          steps.push({fc: fc,name: tp2.name, fullname: tp2.fullname || tp2.name , time: rest, lasttime: tp})
+  steps
 
 Template.guide.helpers
   formatTime: (tp) ->
@@ -417,33 +466,7 @@ Template.guide.helpers
         moment(t).format('m:ss') + ' from now.'
 
   mynextsteps: () ->
-    eid = Session.get('exp_active')
-    exp = if eid then Exps.findOne(eid) else null
-    typ = exp?.expType || 'default'
-    steps = []
-    fcs = Flowcells.find({exp: eid}, {sort: {createOn: 1}}).fetch()
-    timepoints = Protocols.findOne({name: (typ || 'default')}).timepoints
-    for fc in fcs
-      for tp2 in timepoints
-        t = fc[tp2.name]
-        config = Config.findOne()
-        warning = {yellow: 3}
-        tp = fc[prevStep(tp2.name, typ)]
-        if !t and tp
-          dur = (_.findWhere(timepoints, {name: prevStep(tp2.name, typ)})?.duration || 0) * 60 * 1000
-          elapsed = Session.get('time') - tp
-          if dur == 0
-            steps.push({fc: fc,name: tp2.name, fullname: tp2.fullname || tp2.name , time: null, lasttime: tp})
-          else
-            rest = dur - elapsed
-            c = ''
-  #          console.log(dur,elapsed,rest)
-            if rest < 0
-              c = 'late'
-            else if rest < 1000 * 60 * warning.yellow # within 3 min.
-              c = 'coming'
-            steps.push({fc: fc,name: tp2.name, fullname: tp2.fullname || tp2.name , time: rest, lasttime: tp})
-    steps
+    get_mynextsteps()
 
   finishEstimate: () ->
     eid = Session.get('exp_active')
@@ -468,6 +491,10 @@ Template.guide.helpers
         ''
     else
       ''
+
+  selected: (step) ->
+    idx = _.indexOf(_.map(get_mynextsteps(),(s) -> s.fc._id), step.fc._id)
+    if idx == Session.get("guideCurrentFC") then "selected" else ""
 
 Template.guide.events
   'click button.do': (e) ->

@@ -136,7 +136,7 @@
             </tr>
         </thead>
         {{#each mynextsteps}}
-            <tr class="{{blinking .}}" data-id="{{fc._id}}">
+            <tr class="{{blinking .}} {{selected .}}" data-id="{{fc._id}}">
                 <td class="col-md-2">{{fc.name}}</td>
                 <td class="col-md-5">{{fullname}}</td>
                 <td class="col-md-5">

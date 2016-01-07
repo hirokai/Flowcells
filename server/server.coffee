@@ -40,9 +40,47 @@ Meteor.startup ->
     duration: {SUV: 40, Ni: 5, protein: 40, heating: 20, cells: 20, fix: 10}
     warning: {yellow: 3}
   #    if @Protocols.find({}).count() == 0
-  initProtocols()
+  initProtocols_201512()
 
 truef = -> true
+
+initProtocols_201512 = ->
+  @Protocols.remove({})
+  @Protocols.insert
+    name: 'default'
+    version: '1'
+    fullname: 'PLA MNs'
+    sample_name: 'Sample'
+    header1: [
+      (col: 1, row: 2, name: 'Put in oven')
+      (col: 3, row: 1, name: 'Degas #1')
+      (col: 3, row: 1, name: 'Degas #2')
+      (col: 3, row: 1, name: 'Degas #3')
+      (col: 1, row: 2, name: 'Put PTFE weight')
+      (col: 1, row: 2, name: 'Take out')
+      (col: 1, row: 2, name: 'Peel off')
+    ]
+    header2: [
+      'Pump', 'Hold', 'Release',
+      'Pump', 'Hold', 'Release',
+      'Pump', 'Hold', 'Release'
+    ]
+    timepoints: [
+      (name: 'oven', duration: 30)
+      (name: 'degas1_pump', duration: 2)
+      (name: 'degas1_hold', duration: 5)
+      (name: 'degas1_release', duration: 5)
+      (name: 'degas2_pump', duration: 2)
+      (name: 'degas2_hold', duration: 5)
+      (name: 'degas2_release', duration: 5)
+      (name: 'degas3_pump', duration: 2)
+      (name: 'degas3_hold', duration: 5)
+      (name: 'degas3_release', duration: 15)
+      (name: 'put_weight', duration: 120)
+      (name: 'take_out', duration: 20)
+      (name: 'peel_off')
+    ]
+    totalTime: 216
 
 initProtocols = ->
   @Protocols.remove({})

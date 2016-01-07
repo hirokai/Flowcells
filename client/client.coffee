@@ -184,6 +184,11 @@ Template.list.helpers
     exp = if eid then Exps.findOne(eid) else null
     exp?.name
 
+  sample_name: () ->
+    eid = Session.get('exp_active')
+    exp = if eid then Exps.findOne(eid) else null
+    Protocols.findOne({name: (exp?.expType || 'default')}).sample_name || 'FC'
+
   label_type: () ->
     eid = Session.get('exp_active')
     exp = if eid then Exps.findOne(eid) else null
@@ -309,9 +314,10 @@ Template.list.events(
 
   'click #newfc': () ->
     eid = Session.get('exp_active')
+    exp = Exps.findOne(eid)
     num = Flowcells.find({exp: eid}).count() + 1
-    e = Session.get('exp_active')
-    Flowcells.insert({owner: Meteor.userId() || 'sandbox', name: "FC" + num, createOn: new Date(), exp: e})
+    protocol = Protocols.findOne({name: exp.expType || 'default'})
+    Flowcells.insert({owner: Meteor.userId() || 'sandbox', name: (protocol.sample_name ||'FC') + num, createOn: new Date(), exp: eid})
     renderProgress()
 
   'click #toggle-time': () ->
@@ -457,13 +463,15 @@ Template.guide.helpers
       '('+Math.max(0,Math.floor((Session.get('time')-tp.lasttime)/(1000*60)))+' min since the last step)'
     else
       if t >= 1000*60*60
-        moment(t).format('h:mm:ss') + ' from now'
+        # Subtract 9 hours (epoch is 9:00 am) to have correct hour.
+        moment(t).subtract(9, 'hours').format('h:mm:ss') + ' from now'
       else if t < -1000*60*60
         moment(-t).format('h:mm:ss') + ' past'
       else if t < 0
         moment(-t).format('m:ss') + ' past!'
       else
-        moment(t).format('m:ss') + ' from now.'
+        # Subtract 9 hours (epoch is 9:00 am) to have correct hour.
+        moment(t).subtract(9, 'hours').format('m:ss') + ' from now.'
 
   mynextsteps: () ->
     get_mynextsteps()

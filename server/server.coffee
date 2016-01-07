@@ -18,11 +18,11 @@ tobj =
 @Config.allow tobj
 
 Meteor.publish("exps", ->
-  Exps.find({$or: [{owner: this.userId || 'sandbox'}, {shared: this.userId}]})
+  Exps.find({owner: this.userId || 'sandbox'})
 )
 
 Meteor.publish("flowcells", ->
-  Flowcells.find({$or: [{owner: this.userId || 'sandbox'}, {shared: this.userId}]})
+  Flowcells.find({owner: this.userId || 'sandbox'})
 )
 
 Meteor.publish("protocols", ->
